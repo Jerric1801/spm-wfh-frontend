@@ -1,6 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+//components
+import NavBar from '../components/layout/NavBar'
+
 //pages
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard';
@@ -8,12 +11,19 @@ import Dashboard from '../pages/Dashboard';
 
 const AppRoutes = () => {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/login" element={<Login />} />
-            </Routes>
-        </BrowserRouter>
+        <div className="full-viewport-container bg-white flex">
+            <BrowserRouter>
+                <div className="w-[10vw] h-screen shadow-md">
+                    <NavBar />
+                </div>
+                <div className="w-[90vw] h-screen">
+                    <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/login" element={<Login />} />
+                    </Routes>
+                </div>
+            </BrowserRouter>
+        </div>
     );
 };
 

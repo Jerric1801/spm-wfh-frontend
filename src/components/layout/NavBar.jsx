@@ -1,7 +1,7 @@
 function NavBar() {
     return (
-        <div className="">
-            <h1>Hello World</h1>
+        <div className="w-[100%] h-[100%]">
+            <h1>NavBar Here</h1>
         </div>
     )
 }
