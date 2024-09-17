@@ -11,7 +11,7 @@ import Dashboard from '../pages/Dashboard';
 
 const AppRoutes = () => {
     return (
-        <div className="full-viewport-container bg-white flex">
+        <div className="full-viewport-container bg-white flex font-os">
             <BrowserRouter>
                 <div className="w-[10vw] h-screen shadow-md">
                     <NavBar />

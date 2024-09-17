@@ -22,7 +22,7 @@ module.exports = {
 
         //tags
         'tag-blue': {
-          light: '#E5F3FF', 
+          light: '#B0D4F1',
           dark: '#0085FF',   
         },
         'tag-orange': {
@@ -30,7 +30,7 @@ module.exports = {
           dark: '#FF9F2D',   
         },
         'tag-red': {
-          light: '#FF3B3B', 
+          light: '#FFCECE', 
           dark: '#E92C2C',   
         },
         'tag-grey': {
@@ -38,8 +38,8 @@ module.exports = {
           dark: '#585757',   
         },
         'tag-green': {
-          light: '#E5F3FF', 
-          dark: '#0085FF',   
+          light: '#B3E0C3', 
+          dark: '#00BA34',   
         },
         
       },
