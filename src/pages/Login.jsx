@@ -11,10 +11,10 @@ function Login() {
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        if (!email || !password) {
-            setError("Please fill in all fields.");
-            return;
-        }
+        // if (!email || !password) {
+        //     setError("Please fill in all fields.");
+        //     return;
+        // }
         // if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
         //     setError("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
         //     return;
