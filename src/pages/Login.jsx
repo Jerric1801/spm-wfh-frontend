@@ -4,24 +4,65 @@ import background_img from "../assets/images/login_background.jpg";
 import Button from "../components/common/Button";
 
 function Login() {
-    const [email, setEmail] = useState("");
+    const [emailOrId, setEmailOrId] = useState("");
     const [password, setPassword] = useState("");
-    // const [error, setError] = useState("");
+    const [errors, setErrors] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        // if (!email || !password) {
-        //     setError("Please fill in all fields.");
-        //     return;
-        // }
-        // if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
-        //     setError("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
-        //     return;
-        // }
+        // Clear previous error messages
+        setErrors([]);
+        setIsLoading(true);
         
-        console.log("Email:", email);
-        console.log("Password:", password);
+        // User Email and Employee ID requirements
+        // Email: must end with @allinone.com.sg
+        // Employee ID: must be a 6 digit number
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@allinone\.com\.sg$/;
+        const idRegex = /^\d{6}$/;
+        
+        // // Password requirements
+        // const passwordTests = [
+        //     { regex: /.{8,}/, message: "Password must be at least 8 characters long." },
+        //     { regex: /[A-Z]/, message: "Password must contain at least one uppercase letter." },
+        //     { regex: /[a-z]/, message: "Password must contain at least one lowercase letter." },
+        //     { regex: /[0-9]/, message: "Password must contain at least one number." },
+        //     { regex: /[!@#$%^&*(),.?":{}|<>]/, message: "Password must contain at least one special character." }
+        // ];
+        
+        // Store Error Messages
+        const newErrors = [];
+    
+        if (!emailOrId) {
+            newErrors.push("Please enter your Email or Employee ID.");
+        } else if (!emailRegex.test(emailOrId) && !idRegex.test(emailOrId)) {
+            newErrors.push("Please enter a valid company email or employee ID.");
+        }
+    
+        if (!password) {
+            newErrors.push("Please enter your password.");
+        }
+        // } else {
+        //     passwordTests.forEach(test => {
+        //         if (!test.regex.test(password)) {
+        //             newErrors.push(test.message);
+        //         }
+        //     });
+        // }
+    
+        if (newErrors.length > 0) {
+            setErrors(newErrors);
+            setIsLoading(false);
+            return;
+        }
+    
+        // Simulate a longer loading time (e.g., API call)
+        setTimeout(() => {
+            console.log("Email/ID:", emailOrId);
+            console.log("Password:", password);
+            setIsLoading(false);
+        }, 2000); // 2 seconds
     };
 
     return (
@@ -36,24 +77,31 @@ function Login() {
                 alt="Logo"
                 className="absolute top-5 left-5 w-24 h-auto md:w-36 z-10"
             />
-            <div className="bg-white p-5  w-full md:p-10 max-w-md rounded-lg shadow-lg text-center relative z-10">
-                <h1 className="mb-4 font-os font-bold text-2xl md:text-3xl">
-                    WFH Schedule
+            <div className="bg-white w-full max-w-md rounded-lg shadow-lg relative p-5 md:p-10 font-os text-center z-10">
+                <h1 className="mb-4 font-bold text-2xl md:text-3xl">
+                    WFH Tracking System
                 </h1>
-                <h2 className="mb-4 text-center text-lg md:text-xl">
-                    Sign in with your Email
-                </h2>
-                {/* {error && <p className="mb-4">{error}</p>} */}
-                <form onSubmit={handleSubmit} className="mb-10">
+                <p className="mb-4 text-base md:text-base text-left">
+                    Sign in with your company Email or Employee ID
+                    <br />
+                    e.g.
+                    <ul className="list-disc list-inside">
+                        <li>Email: johndoe@allinone.com.sg</li>
+                        <li>ID: 140123</li>
+                    </ul>
+                </p>
+                <form onSubmit={handleSubmit} className="">
                     <div className="mb-4">
                         <input
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full p-2 border border-stroke-grey rounded"
-                            required
+                            type="text"
+                            placeholder="Email or Employee ID"
+                            value={emailOrId}
+                            onChange={(e) => setEmailOrId(e.target.value)}
+                            className={`w-full p-2 border ${errors.some(error => error.toLowerCase().includes("email")) ? "border-red-500" : "border-stroke-grey"} rounded`}
                         />
+                        {errors.filter(error => error.toLowerCase().includes("email")).map((error, index) => (
+                            <p key={index} className="text-red-500">{error}</p>
+                        ))}
                     </div>
                     <div className="mb-4">
                         <input
@@ -61,17 +109,18 @@ function Login() {
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full p-2 border border-stroke-grey rounded"
-                            required
+                            className={`w-full p-2 border ${errors.some(error => error.toLowerCase().includes("password")) ? "border-red-500" : "border-stroke-grey"} rounded`}
                         />
-                        {/* {error && <div>{error}</div>} */}
+                        {errors.filter(error => error.toLowerCase().includes("password")).map((error, index) => (
+                            <p key={index} className="text-red-500">{error}</p>
+                        ))}
                     </div>
                     <div className="mb-4 text-right underline text-tag-blue-dark">
                         <a href="#">
                             Forgot Password?
                         </a>
                     </div>
-                    <Button type="submit" text="Login" width="100%" height="50px" />
+                    <Button type="submit" text={isLoading ? "Loading..." : "Login"} width="60%" height="50px" disabled={isLoading} />
                 </form>
             </div>
         </div>
