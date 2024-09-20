@@ -18,6 +18,11 @@ function Calendar() {
             date.getDate() % 5 === 0 ? ["Public Holiday"] : [],
     }));
 
+    function handleDaySelect(selectedDate) {
+        // Handle the selected date here (e.g., update state)
+        console.log('Selected date:', selectedDate);
+    }
+
     return (
         <div className="w-[100%] h-[100%] p-1 rounded-lg flex flex-col flex-grow overflow-auto">
             <div className="grid grid-cols-7">
@@ -29,7 +34,7 @@ function Calendar() {
             {/* Grid for days */}
             <div className="grid grid-cols-7 gap-0 flex-grow ">
                 {days.map((day) => (
-                    <Day key={day.date} day={day} tags={day.tags}></Day>
+                    <Day key={day.date} day={day} tags={day.tags} onSelect={handleDaySelect}></Day>
                 ))}
             </div>
         </div>
