@@ -7,7 +7,7 @@ import NavBar from '../components/layout/NavBar'
 //pages
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard';
-
+import RequestPage from '../pages/RequestPage';
 
 const AppRoutes = () => {
     return (
@@ -20,6 +20,7 @@ const AppRoutes = () => {
                     <Routes>
                         <Route path="/" element={<Dashboard />} />
                         <Route path="/login" element={<Login />} />
+                        <Route path="/requestPage" element={<RequestPage />} />
                     </Routes>
                 </div>
             </BrowserRouter>
