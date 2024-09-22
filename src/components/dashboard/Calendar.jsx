@@ -1,22 +1,30 @@
 import { startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay } from 'date-fns';
 import Day from './Day'
+import calendarData from '../../data/dashboard/calendar.json'
 
 function Calendar() {
+    //temp data for Calendar 
+    const tempData = calendarData
     const currentMonth = new Date(2024, 8);
 
     const start = startOfMonth(currentMonth);
     const end = endOfMonth(currentMonth);
-    const days = eachDayOfInterval({ start, end }).map((date) => ({
-        date,
-        number: format(date, 'd'),
-        isToday: isSameDay(date, new Date()),
-        // dummy tags here
-        tags:
-            date.getDate() % 3 === 0 ? ["WFH Confirmed"] :
-            date.getDate() % 2 === 0 ? ["WFH Rejected"] :
-            date.getDate() % 1 === 0 ? ["WFH Pending"] :
-            date.getDate() % 5 === 0 ? ["Public Holiday"] : [],
-    }));
+
+    const daysInMonth = eachDayOfInterval({ start, end });
+    
+    const days = daysInMonth.map((date) => {
+        const matchingData = calendarData.find(item => 
+            isSameDay(new Date(item.date), date)
+        );
+
+        return {
+            date,
+            number: format(date, 'd'),
+            isToday: isSameDay(date, new Date()),
+            tags: matchingData ? [matchingData.wfhStatus] : [],
+            teamWfhPercentage: matchingData ? matchingData.teamWfhPercentage : null,
+        };
+    });
 
     function handleDaySelect(selectedDate) {
         // Handle the selected date here (e.g., update state)

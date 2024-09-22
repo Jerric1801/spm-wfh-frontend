@@ -23,9 +23,9 @@ function TopFilterPanel({ startDate = new Date(), endDate = new Date() }) {
         <div className="w-[100%] h-[100%] flex gap-10 flex-row p-2">
             <div className="w-[20%] h-[100%] flex flex-col flex-start justify-center pl-2 gap-2"> 
                 <span className="w-full text-[30px] font-bold">{currentMonth}</span>
-                <div className="w-[60%] h-[30%] flex gap-2">
-                    <button onClick={() => handleMonthChange(-1)} className="bg-black text-white w-[50%] h-full rounded-md text-[25px]"> {'<'} </button> 
-                    <button onClick={() => handleMonthChange(1)} className="bg-black text-white w-[50%] h-full rounded-md text-[25px]"> {'>'} </button> 
+                <div className="w-[60%] h-[30%] flex gap-2 justify-center align-center">
+                    <button onClick={() => handleMonthChange(-1)} className="bg-black text-white w-[50%] h-full rounded-md text-[25px] p-0 m-0"> {'<'} </button> 
+                    <button onClick={() => handleMonthChange(1)} className="bg-black text-white w-[50%] h-full rounded-md text-[25px] p-0 m-0"> {'>'} </button> 
                 </div>
             </div>
             <div className="w-[50%] h-[100%] text-left flex flex-col justify-center items-center font-bold"> 
