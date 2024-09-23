@@ -1,147 +1,152 @@
 [
-    {
-      "date": "2024-09-01",
-      "wfhStatus": null,
-      "teamWfhPercentage": 30
-    },
-    {
-      "date": "2024-09-02",
-      "wfhStatus": null,
-      "teamWfhPercentage": 45
-    },
-    {
-      "date": "2024-09-03",
-      "wfhStatus": "WFH Confirmed",
-      "teamWfhPercentage": 60
-    },
-    {
-      "date": "2024-09-04",
-      "wfhStatus": null, 
-      "teamWfhPercentage": 10
-    },
-    {
-      "date": "2024-09-05",
-      "wfhStatus": "Public Holiday",
-      "teamWfhPercentage": 0
-    },
-    {
-      "date": "2024-09-06",
-      "wfhStatus": "WFH Rejected",
-      "teamWfhPercentage": 20
-    },
-    {
-      "date": "2024-09-07",
-      "wfhStatus": null, 
-      "teamWfhPercentage": 5
-    },
-    {
-      "date": "2024-09-08",
-      "wfhStatus": "WFH Pending",
-      "teamWfhPercentage": 35
-    },
-    {
-      "date": "2024-09-09",
-      "wfhStatus": "WFH Confirmed",
-      "teamWfhPercentage": 55
-    },
-    {
-      "date": "2024-09-10",
-      "wfhStatus": "WFH Rejected",
-      "teamWfhPercentage": 30
-    },
-    {
-      "date": "2024-09-11",
-      "wfhStatus": "WFH Pending",
-      "teamWfhPercentage": 40
-    },
-    {
-      "date": "2024-09-12",
-      "wfhStatus": null, 
-      "teamWfhPercentage": 15
-    },
-    {
-      "date": "2024-09-13",
-      "wfhStatus": "WFH Confirmed",
-      "teamWfhPercentage": 65
-    },
-    {
-      "date": "2024-09-14",
-      "wfhStatus": null, 
-      "teamWfhPercentage": 10
-    },
-    {
-      "date": "2024-09-15",
-      "wfhStatus":null,
-      "teamWfhPercentage": 25
-    },
-    {
-      "date": "2024-09-16",
-      "wfhStatus": null,
-      "teamWfhPercentage": 35
-    },
-    {
-      "date": "2024-09-17",
-      "wfhStatus": "WFH Confirmed",
-      "teamWfhPercentage": 50
-    },
-    {
-      "date": "2024-09-18",
-      "wfhStatus": null,
-      "teamWfhPercentage": 30
-    },
-    {
-      "date": "2024-09-19",
-      "wfhStatus": null, 
-      "teamWfhPercentage": 10
-    },
-    {
-      "date": "2024-09-20",
-      "wfhStatus": "WFH Pending",
-      "teamWfhPercentage": 40
-    },
-    {
-      "date": "2024-09-21",
-      "wfhStatus": null, 
-      "teamWfhPercentage": 5
-    },
-    {
-      "date": "2024-09-22",
-      "wfhStatus": "WFH Confirmed",
-      "teamWfhPercentage": 60
-    },
-    {
-      "date": "2024-09-23",
-      "wfhStatus": "WFH Rejected",
-      "teamWfhPercentage": 25
-    },
-    {
-      "date": "2024-09-24",
-      "wfhStatus": "WFH Pending",
-      "teamWfhPercentage": 35
-    },
-    {
-      "date": "2024-09-25",
-      "wfhStatus": null, 
-      "teamWfhPercentage": 15
-    },
-    {
-      "date": "2024-09-26",
-      "wfhStatus": "WFH Confirmed",
-      "teamWfhPercentage": 55
-    },
-    {
-      "date": "2024-09-27",
-      "wfhStatus": "WFH Rejected",
-      "teamWfhPercentage": 30
-    },
-    {
-      "date": "2024-09-28",
-      "wfhStatus": null, 
-      "teamWfhPercentage": 10
-    },
-    {
-      "date": "2024-09-29",
-      "wfhStatus": "WFH Pending",
-      "teamWfhPercentage": 40
-    }
-  ]
+  {
+    "date": "2024-09-01",
+    "wfhStatus": null,
+    "teamWfhPercentage": 30
+  },
+  {
+    "date": "2024-09-02",
+    "wfhStatus": null,
+    "teamWfhPercentage": 45
+  },
+  {
+    "date": "2024-09-03",
+    "wfhStatus": "WFH Confirmed",
+    "teamWfhPercentage": 60
+  },
+  {
+    "date": "2024-09-04",
+    "wfhStatus": null,
+    "teamWfhPercentage": 10
+  },
+  {
+    "date": "2024-09-05",
+    "wfhStatus": "Public Holiday",
+    "teamWfhPercentage": 0
+  },
+  {
+    "date": "2024-09-06",
+    "wfhStatus": "WFH Rejected",
+    "teamWfhPercentage": 20
+  },
+  {
+    "date": "2024-09-07",
+    "wfhStatus": null,
+    "teamWfhPercentage": 5
+  },
+  {
+    "date": "2024-09-08",
+    "wfhStatus": "WFH Pending",
+    "teamWfhPercentage": 35
+  },
+  {
+    "date": "2024-09-09",
+    "wfhStatus": "WFH Confirmed",
+    "teamWfhPercentage": 55
+  },
+  {
+    "date": "2024-09-10",
+    "wfhStatus": "WFH Rejected",
+    "teamWfhPercentage": 30
+  },
+  {
+    "date": "2024-09-11",
+    "wfhStatus": "WFH Pending",
+    "teamWfhPercentage": 40
+  },
+  {
+    "date": "2024-09-12",
+    "wfhStatus": null,
+    "teamWfhPercentage": 15
+  },
+  {
+    "date": "2024-09-13",
+    "wfhStatus": "WFH Confirmed",
+    "teamWfhPercentage": 65
+  },
+  {
+    "date": "2024-09-14",
+    "wfhStatus": null,
+    "teamWfhPercentage": 10
+  },
+  {
+    "date": "2024-09-15",
+    "wfhStatus": null,
+    "teamWfhPercentage": 25
+  },
+  {
+    "date": "2024-09-16",
+    "wfhStatus": null,
+    "teamWfhPercentage": 35
+  },
+  {
+    "date": "2024-09-17",
+    "wfhStatus": "WFH Confirmed",
+    "teamWfhPercentage": 50
+  },
+  {
+    "date": "2024-09-18",
+    "wfhStatus": null,
+    "teamWfhPercentage": 30
+  },
+  {
+    "date": "2024-09-19",
+    "wfhStatus": null,
+    "teamWfhPercentage": 10
+  },
+  {
+    "date": "2024-09-20",
+    "wfhStatus": "WFH Pending",
+    "teamWfhPercentage": 40
+  },
+  {
+    "date": "2024-09-21",
+    "wfhStatus": null,
+    "teamWfhPercentage": 5
+  },
+  {
+    "date": "2024-09-22",
+    "wfhStatus": "WFH Confirmed",
+    "teamWfhPercentage": 60
+  },
+  {
+    "date": "2024-09-23",
+    "wfhStatus": "WFH Rejected",
+    "teamWfhPercentage": 25
+  },
+  {
+    "date": "2024-09-24",
+    "wfhStatus": "WFH Pending",
+    "teamWfhPercentage": 35
+  },
+  {
+    "date": "2024-09-25",
+    "wfhStatus": null,
+    "teamWfhPercentage": 15
+  },
+  {
+    "date": "2024-09-26",
+    "wfhStatus": "WFH Confirmed",
+    "teamWfhPercentage": 55
+  },
+  {
+    "date": "2024-09-27",
+    "wfhStatus": "WFH Rejected",
+    "teamWfhPercentage": 30
+  },
+  {
+    "date": "2024-09-28",
+    "wfhStatus": null,
+    "teamWfhPercentage": 10
+  },
+  {
+    "date": "2024-09-29",
+    "wfhStatus": "WFH Pending",
+    "teamWfhPercentage": 40
+  },
+  {
+    "date": "2024-09-30",
+    "wfhStatus": "WFH Pending",
+    "teamWfhPercentage": 40
+  }
+]

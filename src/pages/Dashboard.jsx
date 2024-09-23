@@ -6,7 +6,8 @@ import TopFilterPanel from '../components/dashboard/TopFilterPanel'
 import TopProfileBar from '../components/dashboard/TopProfileBar'
 
 function Dashboard() {
-    const [currentMonth, setCurrentMonth] = useState(new Date(2024, 8));
+    const today = new Date()
+    const [currentMonth, setCurrentMonth] = useState(today);
     const [selectedDateRange, setSelectedDateRange] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
 
