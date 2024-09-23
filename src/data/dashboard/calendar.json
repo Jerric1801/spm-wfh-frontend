@@ -143,10 +143,5 @@
       "date": "2024-09-29",
       "wfhStatus": "WFH Pending",
       "teamWfhPercentage": 40
-    },
-    {
-      "date": "2024-09-30",
-      "wfhStatus": "WFH Confirmed",
-      "teamWfhPercentage": 60
     }
   ]

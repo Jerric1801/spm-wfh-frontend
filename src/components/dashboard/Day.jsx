@@ -12,7 +12,6 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
         day.date >= selectedDateRange.start &&
         day.date <= selectedDateRange.end;
 
-
     const [isSelected, setIsSelected] = useState(false);
 
     const tagData = [
@@ -29,6 +28,7 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
     };
 
     let wfhPercentageColor = 'red';
+
     if (day.teamWfhPercentage >= 60) {
         wfhPercentageColor = 'green';
     } else if (day.teamWfhPercentage >= 30) {
@@ -36,6 +36,8 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
     } else if (day.teamWfhPercentage > 0) {
         wfhPercentageColor = 'red';
     }
+
+
 
     return (
         <div

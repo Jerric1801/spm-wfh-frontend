@@ -1,15 +1,11 @@
 import { useState, useEffect } from 'react';
-import { startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay } from 'date-fns';
+import { startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay, startOfWeek, getDay } from 'date-fns';
 import Day from './Day'
 import calendarData from '../../data/dashboard/calendar.json'
 
-function Calendar() {
+function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDragging, currentMonth }) {
     //temp data for Calendar 
     const tempData = calendarData
-    const currentMonth = new Date(2024, 8);
-    const [selectedDateRange, setSelectedDateRange] = useState(null);
-    const [isDragging, setIsDragging] = useState(false);
-
     const start = startOfMonth(currentMonth);
     const end = endOfMonth(currentMonth);
 
@@ -28,6 +24,21 @@ function Calendar() {
             teamWfhPercentage: matchingData ? matchingData.teamWfhPercentage : null,
         };
     });
+
+    const firstDayOfMonth = startOfMonth(currentMonth);
+    const firstDayOfCalendarGrid = startOfWeek(firstDayOfMonth); // Get the first day of the week the month starts in
+
+    // Calculate the number of blank days at the start
+    const blankDays = eachDayOfInterval({
+        start: firstDayOfCalendarGrid,
+        end: firstDayOfMonth
+    }).slice(0, -1);
+
+    // Combine blank days and days of the month
+    const allDays = [
+        ...blankDays.map(date => ({ date, isBlank: true })),
+        ...days
+    ];
 
     useEffect(() => {
         // Attach mouseup event listener to the window
@@ -57,11 +68,12 @@ function Calendar() {
         const y = event.clientY - rect.top;
 
         const col = Math.floor(x / (rect.width / 7));
-        const row = Math.floor(y / (rect.height / (days.length / 7)));
-
+        const row = Math.floor((y - (blankDays.length / 7) * (rect.height / (allDays.length / 7))) / 
+                               (rect.height / (allDays.length / 7)));
+    
         const clickedDateIndex = row * 7 + col;
-        const clickedDate = days[clickedDateIndex]?.date;
-
+        const clickedDate = allDays[clickedDateIndex]?.date;
+    
         if (selectedDateRange &&
             clickedDate >= selectedDateRange.start &&
             clickedDate <= selectedDateRange.end) {
@@ -78,8 +90,8 @@ function Calendar() {
     function handleMouseUp(event) {
         setIsDragging(false);
 
-        if (!selectedDateRange?.start) return; 
-        const calendarGrid = document.getElementById('calendarGrid'); 
+        if (!selectedDateRange?.start) return;
+        const calendarGrid = document.getElementById('calendarGrid');
         let targetElement = event.target;
         while (targetElement && targetElement !== calendarGrid) {
             targetElement = targetElement.parentNode;
@@ -93,14 +105,15 @@ function Calendar() {
         const y = event.clientY - rect.top;
 
         const col = Math.floor(x / (rect.width / 7));
-        const row = Math.floor(y / (rect.height / (days.length / 7)));
-
+        const row = Math.floor((y - (blankDays.length / 7) * (rect.height / (allDays.length / 7))) / 
+                               (rect.height / (allDays.length / 7)));
+    
         const endDateIndex = row * 7 + col;
-        const endDate = days[endDateIndex]?.date;
+        const endDate = allDays[endDateIndex]?.date;
 
         setSelectedDateRange({
             start: selectedDateRange.start,
-            end: endDate || selectedDateRange.start 
+            end: endDate || selectedDateRange.start
         });
     }
 
@@ -112,7 +125,7 @@ function Calendar() {
     }
     return (
         <div id="calendarGrid" className="w-[100%] h-[100%] p-1 rounded-lg flex flex-col flex-grow overflow-auto select-none" onMouseDown={handleMouseDown}
-            >
+        >
             <div className="grid grid-cols-7">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                     <div key={day} className="text-left text-gray-500 font-medium border border-gray-200 p-2">{day}</div>
@@ -120,13 +133,18 @@ function Calendar() {
             </div>
 
             <div className="grid grid-cols-7 gap-0 flex-grow ">
-                {days.map((day) => (
-                    <Day key={day.date}
-                        day={day}
-                        tags={day.tags}
-                        onSelect={handleDaySelect}
-                        selectedDateRange={selectedDateRange}
-                        onMouseOver={() => handleMouseOver(day.date)}></Day>
+                {allDays.map((day) => (
+                    day.isBlank ? (
+                        <div key={day.date} className="p-2 border border-gray-200"></div>
+                    ) : (
+                        <Day key={day.date}
+                            day={day}
+                            tags={day.tags}
+                            onSelect={handleDaySelect}
+                            selectedDateRange={selectedDateRange}
+                            onMouseOver={() => handleMouseOver(day.date)}
+                        ></Day>
+                    )
                 ))}
             </div>
         </div>
