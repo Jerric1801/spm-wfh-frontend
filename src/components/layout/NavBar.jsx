@@ -3,10 +3,13 @@ import RequestPageIcon from "../../assets/images/request-page-icon.png";
 
 function NavBar() {
     return (
-        <div className="w-[100%] h-[100%]" style={{paddingTop:'20px'}}>
-            <img src={CompanyLogo} alt="Company logo" style={{ width: '40%',  margin: 'auto' }}/>
-            <img src={RequestPageIcon} alt="Request page icon" style={{ width: '40%', margin: 'auto', marginTop: '40px', padding: '10px'}}/>
-            
+        <div className="w-[100%] h-[100%]" style={{ paddingTop: '20px' }}>
+            <a href="/">
+                <img src={CompanyLogo} alt="Company logo" style={{ width: '40%', margin: 'auto' }} />
+            </a>
+            <a href="/request">
+                <img src={RequestPageIcon} alt="Request page icon" style={{ width: '40%', margin: 'auto', marginTop: '40px', padding: '10px' }} />
+            </a>
         </div>
     )
 }
