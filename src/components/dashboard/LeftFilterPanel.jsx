@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import Button from '../common/Button'; 
+import Tag from '../common/Tag';
+
 
 function LeftFilterPanel() {
     // Dummy data
@@ -26,41 +29,64 @@ function LeftFilterPanel() {
         5: [{ id: 7, name: "Sam", role:"Finance Staff", status: "IN"}]
     };
 
+
+    // Calculate the total number of teams and members
+     const totalTeams = Object.values(teams).reduce((total, teamArr) => total + teamArr.length, 0);
+     const totalMembers = Object.values(members).reduce((total, memberArr) => total + memberArr.length, 0);
+
     // State for selected department and team
     const [selectedDepartment, setSelectedDepartment] = useState(null);
     const [selectedTeam, setSelectedTeam] = useState(null);
 
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "IN":
+                return "green";
+            case "WFH":
+                return "blue";
+            case "AWAY":
+                return "orange";
+            default:
+                return "grey";
+        }
+    };
+
     return (
         <div className="w-[100%] h-[100%] p-4 bg-white shadow-lg">
-            <h2 className="text-lg font-semibold mb-4">Departments</h2>
+            <h2 className="text-lg font-bold mb-4 flex justify-between items-center">Departments
+                <span className="ml-2 bg-black text-white rounded-full w-8 h-6 flex items-center justify-center text-xs font-bold">
+                    {departments.length}
+                    </span></h2>
             <ul className="mb-6">
                 {departments.map(department => (
                     <li key={department.id}>
-                        <button 
-                            className={`w-full text-left p-2 ${selectedDepartment === department.id ? 'bg-green-200' : 'bg-white'}`}
-                            onClick={() => {
+                        <Button 
+                          text ={department.name}
+                          width ="100%"
+                          isSelected={selectedDepartment === department.id}
+                          onClick={() => {
                                 setSelectedDepartment(department.id);
                                 setSelectedTeam(null); // Reset team selection when a new department is selected
                             }}
-                        >
-                            {department.name}
-                        </button>
+                        />
                     </li>
                 ))}
             </ul>
 
             {selectedDepartment && (
                 <>
-                    <h2 className="text-lg font-semibold mb-4">Team</h2>
+                    <h2 className="text-lg font-bold mb-4 flex justify-between items-center">Team
+                        <span className="ml-2 bg-black text-white rounded-full w-8 h-6 flex items-center justify-center text-xs font-bold">
+                        {teams[selectedDepartment].length}</span></h2>
                     <ul className="mb-6">
                         {teams[selectedDepartment].map(team => (
                             <li key={team.id}>
-                                <button 
-                                    className={`w-full text-left p-2 ${selectedTeam === team.id ? 'bg-green-200' : 'bg-white'}`}
+                                <Button 
+                                    text ={team.name}
+                                    width ="100%"
+                                    isSelected={selectedTeam === team.id}
                                     onClick={() => setSelectedTeam(team.id)}
-                                >
-                                    {team.name}
-                                </button>
+                                />
                             </li>
                         ))}
                     </ul>
@@ -69,19 +95,31 @@ function LeftFilterPanel() {
 
             {selectedTeam && (
                 <>
-                    <h2 className="text-lg font-semibold mb-4">Members</h2>
+                    <h2 className="text-lg font-bold mb-4 flex justify-between items-center">Members
+                        <span className="ml-2 bg-black text-white rounded-full w-8 h-6 flex items-center justify-center text-xs font-bold">
+                        {members[selectedTeam].length}
+                        </span>
+                        </h2>
                     <ul>
                         {members[selectedTeam].map(member => (
-                            <li key={member.id} className="flex justify-between p-2 border-b">
-                                <span>{member.name}</span>
-                                <span className={`status-${member.status.toLowerCase()}`}>{member.status}</span>
+                            <li key={member.id} className="flex justify-between items-center p-2 border-b border-gray-200 rounded-[10px] border-2 ">
+                                <div className="flex items-center">
+                                    <div className="mr-4">
+                                        <img src={`https://randomuser.me/api/portraits/med/men/${member.id}.jpg`} alt={member.name} className="w-10 h-10 rounded-full" /> 
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold">{member.name}</div>
+                                        <div className="text-sm text-gray-500">{member.role}</div>
+                                    </div>
+                                </div>
+                                <Tag text={member.status} color={getStatusColor(member.status)} />
                             </li>
                         ))}
                     </ul>
                 </>
             )}
         </div>
-    )
+    );
 }
 
 export default LeftFilterPanel;
