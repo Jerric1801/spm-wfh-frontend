@@ -21,7 +21,7 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
             number: format(date, 'd'),
             isToday: isSameDay(date, new Date()),
             tags: matchingData ? [matchingData.wfhStatus] : [],
-            teamWfhPercentage: matchingData ? matchingData.teamWfhPercentage : null,
+            wfhPercentage: matchingData ? matchingData.wfhPercentage : null,
         };
     });
 

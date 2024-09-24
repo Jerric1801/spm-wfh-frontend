@@ -1,6 +1,7 @@
 import Tag from '../common/Tag';
 import { useState, useEffect } from 'react';
 
+
 function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
     const isToday = day.isToday;
 
@@ -27,17 +28,12 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
         onSelect(day.date);
     };
 
-    let wfhPercentageColor = 'red';
-
-    if (day.teamWfhPercentage >= 60) {
+    let wfhPercentageColor = 'red'; 
+    if (day.wfhPercentage?.in >= 60) {
         wfhPercentageColor = 'green';
-    } else if (day.teamWfhPercentage >= 30) {
+    } else if (day.wfhPercentage?.in >= 30) {
         wfhPercentageColor = 'orange';
-    } else if (day.teamWfhPercentage > 0) {
-        wfhPercentageColor = 'red';
-    }
-
-
+    } 
 
     return (
         <div
@@ -53,8 +49,8 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
                 ))}
             </div>
             <div className="absolute top-2 right-2">
-                {day.teamWfhPercentage !== null && (
-                    <Tag key="wfhPercentage" text={`${day.teamWfhPercentage}%`} color={wfhPercentageColor} reverse={true} />
+                {day.wfhPercentage && ( 
+                    <Tag key="wfhPercentage" text={`${day.wfhPercentage.in}%`} color={wfhPercentageColor} reverse={true} />
                 )}
             </div>
         </div>

@@ -11,6 +11,8 @@ function Dashboard() {
     const [selectedDateRange, setSelectedDateRange] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
 
+    //useEffect to fetch data based on the selected Date Range
+
     return (
         <div className="grid grid-cols-12 grid-rows-12 gap-0 h-screen">
             {/* Top Profile Bar */}
