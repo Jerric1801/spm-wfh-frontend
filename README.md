@@ -18,4 +18,4 @@ All-In-One, a printing solution company, wants to develop a web application to m
 
 4. Run App:
 
-    `npm run dev`
+   `npm run dev`

@@ -1,0 +1,242 @@
+[
+  {
+    "date": "2024-09-01",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 30,
+      "wfh": 20
+    }
+  },
+  {
+    "date": "2024-09-02",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 55,
+      "wfh": 45
+    }
+  },
+  {
+    "date": "2024-09-03",
+    "wfhStatus": "WFH Confirmed",
+    "wfhPercentage": {
+      "in": 40,
+      "wfh": 60
+    }
+  },
+  {
+    "date": "2024-09-04",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 90,
+      "wfh": 10
+    }
+  },
+  {
+    "date": "2024-09-05",
+    "wfhStatus": "Public Holiday",
+    "wfhPercentage": {
+      "in": 100,
+      "wfh": 0
+    }
+  },
+  {
+    "date": "2024-09-06",
+    "wfhStatus": "WFH Rejected",
+    "wfhPercentage": {
+      "in": 80,
+      "wfh": 20
+    }
+  },
+  {
+    "date": "2024-09-07",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 95,
+      "wfh": 5
+    }
+  },
+  {
+    "date": "2024-09-08",
+    "wfhStatus": "WFH Pending",
+    "wfhPercentage": {
+      "in": 65,
+      "wfh": 35
+    }
+  },
+  {
+    "date": "2024-09-09",
+    "wfhStatus": "WFH Confirmed",
+    "wfhPercentage": {
+      "in": 45,
+      "wfh": 55
+    }
+  },
+  {
+    "date": "2024-09-10",
+    "wfhStatus": "WFH Rejected",
+    "wfhPercentage": {
+      "in": 70,
+      "wfh": 30
+    }
+  },
+  {
+    "date": "2024-09-11",
+    "wfhStatus": "WFH Pending",
+    "wfhPercentage": {
+      "in": 60,
+      "wfh": 40
+    }
+  },
+  {
+    "date": "2024-09-12",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 85,
+      "wfh": 15
+    }
+  },
+  {
+    "date": "2024-09-13",
+    "wfhStatus": "WFH Confirmed",
+    "wfhPercentage": {
+      "in": 35,
+      "wfh": 65
+    }
+  },
+  {
+    "date": "2024-09-14",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 90,
+      "wfh": 10
+    }
+  },
+  {
+    "date": "2024-09-15",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 75,
+      "wfh": 25
+    }
+  },
+  {
+    "date": "2024-09-16",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 65,
+      "wfh": 35
+    }
+  },
+  {
+    "date": "2024-09-17",
+    "wfhStatus": "WFH Confirmed",
+    "wfhPercentage": {
+      "in": 50,
+      "wfh": 50
+    }
+  },
+  {
+    "date": "2024-09-18",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 70,
+      "wfh": 30
+    }
+  },
+  {
+    "date": "2024-09-19",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 90,
+      "wfh": 10
+    }
+  },
+  {
+    "date": "2024-09-20",
+    "wfhStatus": "WFH Pending",
+    "wfhPercentage": {
+      "in": 60,
+      "wfh": 40
+    }
+  },
+  {
+    "date": "2024-09-21",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 95,
+      "wfh": 5
+    }
+  },
+  {
+    "date": "2024-09-22",
+    "wfhStatus": "WFH Confirmed",
+    "wfhPercentage": {
+      "in": 40,
+      "wfh": 60
+    }
+  },
+  {
+    "date": "2024-09-23",
+    "wfhStatus": "WFH Rejected",
+    "wfhPercentage": {
+      "in": 75,
+      "wfh": 25
+    }
+  },
+  {
+    "date": "2024-09-24",
+    "wfhStatus": "WFH Pending",
+    "wfhPercentage": {
+      "in": 65,
+      "wfh": 35
+    }
+  },
+  {
+    "date": "2024-09-25",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 85,
+      "wfh": 15
+    }
+  },
+  {
+    "date": "2024-09-26",
+    "wfhStatus": "WFH Confirmed",
+    "wfhPercentage": {
+      "in": 45,
+      "wfh": 55
+    }
+  },
+  {
+    "date": "2024-09-27",
+    "wfhStatus": "WFH Rejected",
+    "wfhPercentage": {
+      "in": 70,
+      "wfh": 30
+    }
+  },
+  {
+    "date": "2024-09-28",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 90,
+      "wfh": 10
+    }
+  },
+  {
+    "date": "2024-09-29",
+    "wfhStatus": "WFH Pending",
+    "wfhPercentage": {
+      "in": 60,
+      "wfh": 40
+    }
+  },
+  {
+    "date": "2024-09-30",
+    "wfhStatus": "WFH Pending",
+    "wfhPercentage": {
+      "in": 60,
+      "wfh": 40
+    }
+  }
+]
