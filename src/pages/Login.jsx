@@ -63,7 +63,7 @@ function Login() {
                 alt="Logo"
                 className="absolute top-5 left-5 w-24 h-auto md:w-36 z-10"
             />
-            <div className="bg-white w-full max-w-md rounded-lg shadow-lg relative p-5 md:p-10 font-os z-10">
+            <div className="bg-white w-full max-w-md rounded-lg shadow-xl relative p-10 md:p-10 font-os z-10">
                 <h1 className="mb-4 font-bold text-2xl text-center md:text-3xl">
                     WFH Tracking System
                 </h1>
@@ -106,7 +106,9 @@ function Login() {
                             Forgot Password?
                         </a>
                     </div>
-                    <Button type="submit" text={isLoading ? "Loading..." : "Login"} width="60%" height="50px" disabled={isLoading} />
+                    <div className="flex justify-center">
+                        <Button type="submit" text={isLoading ? "Loading..." : "Login"} width="60%" height="50px" disabled={isLoading} />
+                    </div>
                 </form>
             </div>
         </div>
