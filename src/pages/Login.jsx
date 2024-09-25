@@ -16,10 +16,12 @@ function Login() {
         setErrors([]);
         setIsLoading(true);
         
-        // User Email and Employee ID requirements
-        // Email: must end with @allinone.com.sg
+        // Email: must end with @allinone.com + a valid domain name like .sg, .hk or .id
+        const domains = ['sg', 'hk', 'id', 'my', 'vn']; // Add all your domain endings here
+        const domainPattern = domains.join('|');
+        const emailRegex = new RegExp(`^[a-zA-Z0-9._%+-]+@allinone\\.com\\.(?:${domainPattern})$`);
+        
         // Employee ID: must be a 6 digit number
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@allinone\.com\.sg$/;
         const idRegex = /^\d{6}$/;
         
         // Store Error Messages
