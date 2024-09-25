@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 
 //components
 import NavBar from '../components/layout/NavBar'
@@ -10,19 +10,32 @@ import Dashboard from '../pages/Dashboard';
 
 
 const AppRoutes = () => {
-    return (
-        <div className="full-viewport-container bg-white flex font-os">
-            <BrowserRouter>
+    const location = useLocation();
+
+    const renderNavBar = () => {
+        if (!location.pathname.includes('/login')) {
+            return (
                 <div className="w-[10vw] h-screen shadow-md">
                     <NavBar />
                 </div>
-                <div className="w-[90vw] h-screen">
-                    <Routes>
-                        <Route path="/" element={<Dashboard />} />
-                        <Route path="/login" element={<Login />} />
-                    </Routes>
-                </div>
-            </BrowserRouter>
+            );
+        }
+        return null;
+    };
+
+    const getMainContentClass = () => {
+        return location.pathname.includes('/login') ? "w-full h-screen" : "w-[90vw] h-screen";
+    };
+
+    return (
+        <div className="full-viewport-container bg-white flex font-os">
+            {renderNavBar()}
+            <div className={getMainContentClass()}>
+                <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/login" element={<Login />} />
+                </Routes>
+            </div>
         </div>
     );
 };

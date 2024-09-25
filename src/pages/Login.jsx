@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { React, useState } from "react";
 import logo_img from "../assets/images/all-in-one_logo2.svg";
 import background_img from "../assets/images/login_background.jpg";
 import Button from "../components/common/Button";
@@ -66,7 +66,7 @@ function Login() {
     };
 
     return (
-        <div className="full-viewport-container flex justify-center items-center relative p-4 md:p-0">
+        <div className="w-full h-full flex justify-center items-center relative p-4 md:p-0">
             <img
                 src={background_img}
                 alt="Background"
@@ -77,8 +77,8 @@ function Login() {
                 alt="Logo"
                 className="absolute top-5 left-5 w-24 h-auto md:w-36 z-10"
             />
-            <div className="bg-white w-full max-w-md rounded-lg shadow-lg relative p-5 md:p-10 font-os text-center z-10">
-                <h1 className="mb-4 font-bold text-2xl md:text-3xl">
+            <div className="bg-white w-full max-w-md rounded-lg shadow-lg relative p-5 md:p-10 font-os z-10">
+                <h1 className="mb-4 font-bold text-2xl text-center md:text-3xl">
                     WFH Tracking System
                 </h1>
                 <p className="mb-4 text-base md:text-base text-left">
