@@ -1,16 +1,50 @@
 import { React, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { userLogin } from "../services/endpoints/auth";
-// import the assets and components
+// import { userLogin } from "../services/endpoints/auth"; // (not yet ready)
 import logo_img from "../assets/images/all-in-one_logo2.svg";
 import background_img from "../assets/images/login_background.jpg";
 import Button from "../components/common/Button";
+import userData from '../data/auth/user.json'; // Import dummy data
+
+// Simulate userLogin function and userData
+const userLogin = async (emailOrId, password) => {
+    try {
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Search for user in dummy data
+        const user = userData.find(user => 
+            (user.email === emailOrId || user.employeeId === emailOrId) && user.password === password
+        );
+
+        if (user) {
+            // Simulate a token
+            const token = "fake-jwt-token";
+            localStorage.setItem('token', token); // Store the token in localStorage
+
+            // Log user details
+            console.log('User details:', user);
+            console.log('jwt-token:', token);
+
+            return { success: true, message: "Login is successful", token };
+        } else {
+            return { success: false, message: "Invalid Email/Employee ID or password" };
+        }
+    } catch (error) {
+        console.error('Login error:', error.message);
+        return { success: false, message: error.message };
+    }
+};
+
+
+
 
 function Login() {
     const [emailOrId, setEmailOrId] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
     const navigate = useNavigate();
 
     const validateInputs = () => {
@@ -23,7 +57,7 @@ function Login() {
         if (!emailOrId) {
             newErrors.push("Please enter your Email or Employee ID.");
         } else if (!emailRegex.test(emailOrId) && !idRegex.test(emailOrId)) {
-            newErrors.push("Please enter a valid company email or employee ID.");
+            newErrors.push("Please enter a valid company Email or Employee ID.");
         }
 
         if (!password) {
@@ -45,6 +79,7 @@ function Login() {
         e.preventDefault();
         setErrors([]);
         setIsLoading(true);
+        setSuccessMessage("");
 
         const validationErrors = validateInputs();
         if (validationErrors.length > 0) {
@@ -52,11 +87,33 @@ function Login() {
             setIsLoading(false);
             return;
         }
-
+    
+        // Return error if login takes more than 10 seconds
+        const loginWithTimeout = (emailOrId, password, timeout = 10000) => {
+            return new Promise((resolve, reject) => {
+                const timer = setTimeout(() => {
+                    reject(new Error("Request timed out"));
+                }, timeout);
+    
+                userLogin(emailOrId, password)
+                    .then((result) => {
+                        clearTimeout(timer);
+                        resolve(result);
+                    })
+                    .catch((error) => {
+                        clearTimeout(timer);
+                        reject(error);
+                    });
+            });
+        };
+    
         try {
-            const result = await userLogin(emailOrId, password);
+            const result = await loginWithTimeout(emailOrId, password);
             if (result.success) {
-                navigate("/");
+                setSuccessMessage(result.message);
+                setTimeout(() => {
+                    navigate("/"); // Redirect to dashboard at root "/" after a short delay
+                }, 3000);
             } else {
                 handleLoginError(result.message);
             }
@@ -65,6 +122,7 @@ function Login() {
         } finally {
             setIsLoading(false);
         }
+
     };
 
     return (
@@ -83,7 +141,7 @@ function Login() {
                 <h1 className="mb-4 font-bold text-2xl text-center md:text-3xl">
                     WFH Tracking System
                 </h1>
-                <p className="mb-4 text-base md:text-base text-left">
+                <div className="mb-4 text-base md:text-base text-left">
                     Sign in with your company Email or Employee ID
                     <br />
                     e.g.
@@ -91,7 +149,7 @@ function Login() {
                         <li>Email: johndoe@allinone.com.sg</li>
                         <li>ID: 140123</li>
                     </ul>
-                </p>
+                </div>
                 <form onSubmit={handleSubmit} className="">
                     <div className="mb-4">
                         <input
@@ -124,6 +182,13 @@ function Login() {
                     </div>
                     <div className="flex justify-center">
                         <Button type="submit" text={isLoading ? "Loading..." : "Login"} width="60%" height="50px" disabled={isLoading} />
+                    </div>
+                    <div>
+                        {successMessage && 
+                        <div className="bg-green justify-center"> 
+                            <div className="text-center text-white">{successMessage}</div>    
+                        </div>
+                        }
                     </div>
                 </form>
             </div>

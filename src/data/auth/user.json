@@ -1,0 +1,47 @@
+[
+    {
+        "email": "test@allinone.com.sg",
+        "employeeId": "123123",
+        "password": "123"
+    },
+    {
+        "email": "johndoe@allinone.com.sg",
+        "employeeId": "140123",
+        "password": "johndoepassword"
+    },
+    {
+        "email": "alice@allinone.com.vn",
+        "employeeId": "789456",
+        "password": "alicepassword"
+    },
+    {
+        "email": "bob@allinone.com.my",
+        "employeeId": "321654",
+        "password": "bobpassword"
+    },
+    {
+        "email": "charlie@allinone.com.hk",
+        "employeeId": "987654",
+        "password": "charliepassword"
+    },
+    {
+        "email": "david@allinone.com.vn",
+        "employeeId": "456789",
+        "password": "davidpassword"
+    },
+    {
+        "email": "eve@allinone.com.my",
+        "employeeId": "654987",
+        "password": "evepassword"
+    },
+    {
+        "email": "frank@allinone.com.sg",
+        "employeeId": "789123",
+        "password": "frankpassword"
+    },
+    {
+        "email": "grace@allinone.com.hk",
+        "employeeId": "123789",
+        "password": "gracepassword"
+    }
+]
