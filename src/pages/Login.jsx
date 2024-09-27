@@ -1,4 +1,7 @@
 import { React, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { userLogin } from "../services/endpoints/auth";
+// import the assets and components
 import logo_img from "../assets/images/all-in-one_logo2.svg";
 import background_img from "../assets/images/login_background.jpg";
 import Button from "../components/common/Button";
@@ -8,47 +11,60 @@ function Login() {
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        
-        // Clear previous error messages
-        setErrors([]);
-        setIsLoading(true);
-        
-        // Email: must end with @allinone.com + a valid domain name like .sg, .hk or .id
-        const domains = ['sg', 'hk', 'id', 'my', 'vn']; // Add all your domain endings here
-        const domainPattern = domains.join('|');
-        const emailRegex = new RegExp(`^[a-zA-Z0-9._%+-]+@allinone\\.com\\.(?:${domainPattern})$`);
-        
-        // Employee ID: must be a 6 digit number
-        const idRegex = /^\d{6}$/;
-        
-        // Store Error Messages
+    const validateInputs = () => {
         const newErrors = [];
-    
+        const domains = ['sg', 'hk', 'id', 'my', 'vn']; // handle different domain names for user email
+        const domainNames = domains.join('|');
+        const emailRegex = new RegExp(`^[a-zA-Z0-9._%+-]+@allinone\\.com\\.(?:${domainNames})$`); // user email must end with @allinone.com. + a domain name
+        const idRegex = /^\d{6}$/; // Employee ID must be a 6 digit number
+
         if (!emailOrId) {
             newErrors.push("Please enter your Email or Employee ID.");
         } else if (!emailRegex.test(emailOrId) && !idRegex.test(emailOrId)) {
             newErrors.push("Please enter a valid company email or employee ID.");
         }
-    
+
         if (!password) {
             newErrors.push("Please enter your password.");
         }
-    
-        if (newErrors.length > 0) {
-            setErrors(newErrors);
+
+        return newErrors;
+    };
+
+    const handleLoginError = (message) => {
+        setErrors([message]);
+    };
+
+    const handleNetworkError = (error) => {
+        setErrors([error.message]);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setErrors([]);
+        setIsLoading(true);
+
+        const validationErrors = validateInputs();
+        if (validationErrors.length > 0) {
+            setErrors(validationErrors);
             setIsLoading(false);
             return;
         }
-    
-        // Simulate a longer loading time (e.g., API call)
-        setTimeout(() => {
-            console.log("Email/ID:", emailOrId);
-            console.log("Password:", password);
+
+        try {
+            const result = await userLogin(emailOrId, password);
+            if (result.success) {
+                navigate("/");
+            } else {
+                handleLoginError(result.message);
+            }
+        } catch (error) {
+            handleNetworkError(error);
+        } finally {
             setIsLoading(false);
-        }, 2000); // 2 seconds
+        }
     };
 
     return (
