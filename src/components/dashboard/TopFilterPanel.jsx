@@ -1,14 +1,18 @@
 import Button from '../common/Button';
-import { useState, useEffect } from 'react';
-import { startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
+import { useState, useEffect, useContext } from 'react';
+import { isSameDay } from 'date-fns';
 import calendarData from '../../data/dashboard/calendar.json'
+import { ScheduleContext } from '../../context/ScheduleContext';
 
-function TopFilterPanel({ currentMonth, setCurrentMonth, startDate = new Date(), endDate = new Date() }) {
+function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Date() }) {
+    const { setCurrentMonth } = useContext(ScheduleContext);
+
     const handleMonthChange = (direction) => {
         const newDate = new Date(currentMonth);
         newDate.setMonth(newDate.getMonth() + direction);
-        setCurrentMonth(newDate);
+        setCurrentMonth(newDate); 
     };
+
 
     const tempData = calendarData;
 
