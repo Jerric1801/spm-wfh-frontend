@@ -7,40 +7,65 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
     const isToday = day.isToday;
 
     const { scheduleData, fetchParams } = useContext(ScheduleContext);
-    const [memberCount, setMemberCount] = useState(0);
+    const [memberCount, setMemberCount] = useState({ AM: 0, PM: 0, WD: 0, IN: 0 });
+
 
     useEffect(() => {
         const matchingData = scheduleData.find(item => isSameDay(new Date(item.date), day.date));
 
         if (matchingData) {
-            if (fetchParams.department && fetchParams.team) { // Department and team selected
+            let amCount = 0;
+            let pmCount = 0;
+            let wdCount = 0;
+            let inCount = 0;
+
+            if (fetchParams.department && fetchParams.team) {
                 const members = matchingData.departments
                     .find(d => d.department === fetchParams.department)?.teams
                     .find(t => t.team === fetchParams.team)?.members;
 
-                setMemberCount(members ? members.length : 0);
-            } else if (fetchParams.department) { // Only department selected
-                let totalCount = 0;
+                if (members) {
+                    members.forEach(member => {
+                        switch (member.WFH_Type) {
+                            case 'AM': amCount++; break;
+                            case 'PM': pmCount++; break;
+                            case 'WD': wdCount++; break;
+                            case 'IN': inCount++; break;
+                        }
+                    });
+                }
+            } else if (fetchParams.department) {
                 const department = matchingData.departments.find(d => d.department === fetchParams.department);
                 if (department) {
                     department.teams.forEach(team => {
-                        totalCount += team.members.length; // Count all members in the department
+                        team.members.forEach(member => {
+                            switch (member.WFH_Type) {
+                                case 'AM': amCount++; break;
+                                case 'PM': pmCount++; break;
+                                case 'WD': wdCount++; break;
+                                case 'IN': inCount++; break;
+                            }
+                        });
                     });
                 }
-                
-                setMemberCount(totalCount);
-            }
-            else { // No department or team selected
-                let totalCount = 0;
+            } else {
                 matchingData.departments.forEach(dept => {
                     dept.teams.forEach(team => {
-                        totalCount += team.members.length; // Count all members
+                        team.members.forEach(member => {
+                            switch (member.WFH_Type) {
+                                case 'AM': amCount++; break;
+                                case 'PM': pmCount++; break;
+                                case 'WD': wdCount++; break;
+                                case 'IN': inCount++; break;
+                            }
+                        });
                     });
                 });
-                setMemberCount(totalCount);
             }
+
+            setMemberCount({ AM: amCount, PM: pmCount, WD: wdCount, IN: inCount });
         } else {
-            setMemberCount(0);
+            setMemberCount({ AM: 0, PM: 0, WD: 0, IN: 0 });
         }
     }, [day.date, scheduleData, fetchParams]);
 
@@ -84,8 +109,13 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
                     <Tag key={index} text={tag.text} color={tag.color} />
                 ))}
             </div>
-            <div className="absolute top-2 right-2">
-                <Tag key="memberCount" text={memberCount} color="blue" reverse={true} />
+            <div className="absolute top-2 right-2 grid grid-cols-2 gap-1">
+
+                {Object.entries(memberCount).map(([type, count]) => (
+               
+                        <Tag key={type} text={`${type}: ${count}`} color="blue" reverse={true} />
+                    
+                ))}
             </div>
         </div>
     );
