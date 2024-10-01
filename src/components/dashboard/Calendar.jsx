@@ -1,29 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay, startOfWeek, getDay } from 'date-fns';
 import Day from './Day'
-import calendarData from '../../data/dashboard/calendar.json'
+import { ScheduleContext } from '../../context/ScheduleContext';
 
 function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDragging, currentMonth }) {
-    //temp data for Calendar 
-    const tempData = calendarData
+    const { scheduleData } = useContext(ScheduleContext);
+
     const start = startOfMonth(currentMonth);
     const end = endOfMonth(currentMonth);
-
     const daysInMonth = eachDayOfInterval({ start, end });
 
     const days = daysInMonth.map((date) => {
-        const matchingData = tempData.find(item =>
-            isSameDay(new Date(item.date), date)
-        );
+        const matchingData = scheduleData.find(item => isSameDay(new Date(item.date), date));
+        // Extract the tags from the matchingData if it exists, otherwise set to an empty array
+        const tags = matchingData?.departments.flatMap(department => 
+            department.teams.flatMap(team => 
+                team.members.map(member => member.WFH_Type)
+            )
+        ) || [];
 
         return {
             date,
             number: format(date, 'd'),
             isToday: isSameDay(date, new Date()),
-            tags: matchingData ? [matchingData.wfhStatus] : [],
-            wfhPercentage: matchingData ? matchingData.wfhPercentage : null,
+            tags: tags, 
         };
     });
+
 
     const firstDayOfMonth = startOfMonth(currentMonth);
     const firstDayOfCalendarGrid = startOfWeek(firstDayOfMonth); // Get the first day of the week the month starts in

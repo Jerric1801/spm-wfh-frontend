@@ -1,13 +1,49 @@
 import Tag from '../common/Tag';
-import { useState, useEffect } from 'react';
-
+import { useState, useEffect, useContext } from 'react';
+import { isSameDay } from 'date-fns';
+import { ScheduleContext } from '../../context/ScheduleContext';
 
 function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
     const isToday = day.isToday;
 
+    const { scheduleData, fetchParams } = useContext(ScheduleContext);
+    const [memberCount, setMemberCount] = useState(0);
+
     useEffect(() => {
-        // This will cause the component to re-render whenever selectedDateRange changes
-    }, [selectedDateRange]);
+        const matchingData = scheduleData.find(item => isSameDay(new Date(item.date), day.date));
+
+        if (matchingData) {
+            if (fetchParams.department && fetchParams.team) { // Department and team selected
+                const members = matchingData.departments
+                    .find(d => d.department === fetchParams.department)?.teams
+                    .find(t => t.team === fetchParams.team)?.members;
+
+                setMemberCount(members ? members.length : 0);
+            } else if (fetchParams.department) { // Only department selected
+                let totalCount = 0;
+                const department = matchingData.departments.find(d => d.department === fetchParams.department);
+                if (department) {
+                    department.teams.forEach(team => {
+                        totalCount += team.members.length; // Count all members in the department
+                    });
+                }
+                
+                setMemberCount(totalCount);
+            }
+            else { // No department or team selected
+                let totalCount = 0;
+                matchingData.departments.forEach(dept => {
+                    dept.teams.forEach(team => {
+                        totalCount += team.members.length; // Count all members
+                    });
+                });
+                setMemberCount(totalCount);
+            }
+        } else {
+            setMemberCount(0);
+        }
+    }, [day.date, scheduleData, fetchParams]);
+
 
     const isWithinRange = selectedDateRange &&
         day.date >= selectedDateRange.start &&
@@ -28,12 +64,12 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
         onSelect(day.date);
     };
 
-    let wfhPercentageColor = 'red'; 
+    let wfhPercentageColor = 'red';
     if (day.wfhPercentage?.in >= 60) {
         wfhPercentageColor = 'green';
     } else if (day.wfhPercentage?.in >= 30) {
         wfhPercentageColor = 'orange';
-    } 
+    }
 
     return (
         <div
@@ -49,9 +85,7 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
                 ))}
             </div>
             <div className="absolute top-2 right-2">
-                {day.wfhPercentage && ( 
-                    <Tag key="wfhPercentage" text={`${day.wfhPercentage.in}%`} color={wfhPercentageColor} reverse={true} />
-                )}
+                <Tag key="memberCount" text={memberCount} color="blue" reverse={true} />
             </div>
         </div>
     );

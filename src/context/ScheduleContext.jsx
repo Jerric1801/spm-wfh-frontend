@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useMemo } from 'react';
 import { getSchedule } from '../services/endpoints/schedule';
 
 const ScheduleContext = createContext();
@@ -6,9 +6,15 @@ const ScheduleContext = createContext();
 const ScheduleProvider = ({ children }) => {
     const [scheduleData, setScheduleData] = useState([]);
     const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [fetchParams, setFetchParams] = useState({ 
+        department: '',
+        team: ''
+    }); 
+
 
     useEffect(() => {
         const fetchSchedule = async () => {
+            console.log('fetching')
             try {
                 const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
                 const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
@@ -20,19 +26,22 @@ const ScheduleProvider = ({ children }) => {
 
                 const data = await getSchedule(scheduleParams);
                 setScheduleData(data);
+
             } catch (error) {
                 console.error("Error fetching schedule:", error);
             }
         };
 
         fetchSchedule();
-    }, [currentMonth]); // Dependency array includes fetchParams
+    }, [currentMonth, fetchParams]);
 
-    const contextValue = {
+    const contextValue = useMemo(() => ({
         scheduleData,
-        currentMonth,
-        setCurrentMonth
-    };
+        currentMonth, 
+        setCurrentMonth,
+        setFetchParams,
+        fetchParams   
+    }), [scheduleData, currentMonth, setFetchParams ]); 
 
     return (
         <ScheduleContext.Provider value={contextValue}>

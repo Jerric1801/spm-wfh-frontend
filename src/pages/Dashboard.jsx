@@ -17,7 +17,7 @@ function Dashboard() {
         end: today
     });
     const [isDragging, setIsDragging] = useState(false);
-    const { scheduleData, setScheduleData, currentMonth, setCurrentMonth } = useContext(ScheduleContext);
+    const { currentMonth } = useContext(ScheduleContext);
     const handleDateRangeChange = (newDateRange) => {
         setSelectedDateRange({
             start: newDateRange?.start || today, // Use optional chaining here
@@ -42,8 +42,7 @@ function Dashboard() {
             {/* Calendar */}
             <div className="col-span-9 row-span-2 shadow-md">
                 <TopFilterPanel
-                    currentMonth={currentMonth} op
-                    setCurrentMonth={setCurrentMonth}
+                    currentMonth={currentMonth} 
                     startDate={selectedDateRange?.start || new Date()}
                     endDate={selectedDateRange?.end || new Date()}
                 />

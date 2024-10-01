@@ -1,12 +1,20 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import Button from '../common/Button';
 import Tag from '../common/Tag';
 import { ScheduleContext } from '../../context/ScheduleContext';
 
 function LeftFilterPanel({ selectedDateRange }) {
-    const { scheduleData, setFetchParams, currentMonth } = useContext(ScheduleContext);
     const [selectedDepartment, setSelectedDepartment] = useState(null);
     const [selectedTeam, setSelectedTeam] = useState(null);
+    const { scheduleData, setFetchParams, currentMonth } = useContext(ScheduleContext);
+    useEffect(() => {
+        const updateScheduleData = () => {
+            // This function will filter the existing scheduleData based on selectedDepartment and selectedTeam
+            // and update the context's scheduleData
+        };
+
+        updateScheduleData(); // Call the function initially and whenever dependencies change
+    }, [scheduleData, setFetchParams]); // Add dependencies
 
     const departmentEmojis = {
         "Engineering": { emoji: "⚙️", bgColor: "bg-blue-200" },
@@ -14,7 +22,6 @@ function LeftFilterPanel({ selectedDateRange }) {
         "Consultancy": { emoji: "🧠", bgColor: "bg-yellow-200" },
         "Finance": { emoji: "💰", bgColor: "bg-red-200" },
     };
-
 
     const departments = Array.from(new Set(scheduleData.flatMap(item => item.departments.map(dept => dept.department))))
         .map((department, index) => ({ id: index + 1, name: department }));
@@ -46,13 +53,13 @@ function LeftFilterPanel({ selectedDateRange }) {
                     ...member,
                     status: member.WFH_Type
                 }));
-            }  else { // Date range
+            } else { // Date range
                 const membersInRange = scheduleData.filter(item => {
                     const itemDate = new Date(item.date);
                     // Filter by both date range AND current month
                     return itemDate >= startDate && itemDate <= endDate &&
-                           itemDate.getMonth() === currentMonth.getMonth() && 
-                           itemDate.getFullYear() === currentMonth.getFullYear(); 
+                        itemDate.getMonth() === currentMonth.getMonth() &&
+                        itemDate.getFullYear() === currentMonth.getFullYear();
                 }).flatMap(item =>
                     item.departments.find(d => d.department === department.name)?.teams
                         .find(t => t.team === team.name)?.members || []
@@ -100,20 +107,31 @@ function LeftFilterPanel({ selectedDateRange }) {
     };
 
     const handleDepartmentChange = (departmentId) => {
-        setSelectedDepartment(departmentId);
-        setSelectedTeam(null);
-        const department = departments.find(dept => dept.id === departmentId);
-        if (department) {
-            setFetchParams(prevParams => ({ ...prevParams, department: department.name }));
+        if (selectedDepartment === departmentId) {
+            setSelectedDepartment(null);
+            setSelectedTeam(null);
+            setFetchParams(prevParams => ({ ...prevParams, department: '' })); // Reset department filter
+        } else {
+            setSelectedDepartment(departmentId);
+            setSelectedTeam(null);
+            const department = departments.find(dept => dept.id === departmentId);
+            if (department) {
+                setFetchParams(prevParams => ({ ...prevParams, department: department.name }));
+            }
         }
     };
 
     const handleTeamChange = (teamId) => {
-        setSelectedTeam(teamId);
-        const department = departments.find(dept => dept.id === selectedDepartment);
-        const team = teams[selectedDepartment]?.find(t => t.id === teamId);
-        if (department && team) {
-            setFetchParams(prevParams => ({ ...prevParams, team: team.name }));
+        if (selectedTeam === teamId) {
+            setSelectedTeam(null);
+            setFetchParams(prevParams => ({ ...prevParams, team: '' })); // Reset team filter
+        } else {
+            setSelectedTeam(teamId);
+            const department = departments.find(dept => dept.id === selectedDepartment);
+            const team = teams[selectedDepartment]?.find(t => t.id === teamId);
+            if (department && team) {
+                setFetchParams(prevParams => ({ ...prevParams, team: team.name }));
+            }
         }
     };
 
@@ -124,7 +142,7 @@ function LeftFilterPanel({ selectedDateRange }) {
                 <span className="ml-2 bg-black text-white rounded-full w-8 h-6 flex items-center justify-center text-xs font-bold">
                     {departments.length}
                 </span></h2>
-            <div className='overflow-y-auto max-h-[25vh]'>
+            <div className='overflow-y-auto max-h-[20vh]'>
                 <ul className="mb-6">
                     {departments.map(department => (
                         <li key={department.id}
@@ -143,13 +161,13 @@ function LeftFilterPanel({ selectedDateRange }) {
             </div>
 
 
-            {selectedDepartment && (
+            {selectedDepartment && teams[selectedDepartment] && (
                 <>
                     <h2 className="text-lg font-bold mb-4 flex justify-between items-center">Team
                         <span className="ml-2 bg-black text-white rounded-full w-8 h-6 flex items-center justify-center text-xs font-bold">
                             {teams[selectedDepartment].length}</span></h2>
-                    <div className='overflow-y-auto max-h-[30vh]'>
-                        <ul className="mb-6">
+                    <div className='overflow-y-auto max-h-[20vh]'>
+                        <ul className="mb-2">
                             {teams[selectedDepartment].map(team => (
                                 <li key={team.id}
                                     className={`flex justify-between items-center p-2 border-b border-gray-200 rounded-[10px] border-2 mt-1 cursor-pointer 
