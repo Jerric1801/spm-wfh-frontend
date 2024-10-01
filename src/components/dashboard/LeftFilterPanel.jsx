@@ -28,7 +28,7 @@ function LeftFilterPanel({ selectedDateRange }) {
         return acc;
     }, {});
 
-    const getMembers = (departmentId, teamId) => {
+    const getMembers = (departmentId, teamId, statusFilter=undefined) => {
         const department = departments.find(dept => dept.id === departmentId);
         const team = teams[departmentId]?.find(t => t.id === teamId);
         const startDate = selectedDateRange?.start;
@@ -41,6 +41,10 @@ function LeftFilterPanel({ selectedDateRange }) {
                 const membersOnDate = scheduleData.find(item => item.date === targetDate)?.departments
                     .find(d => d.department === department.name)?.teams
                     .find(t => t.team === team.name)?.members || [];
+
+                if (statusFilter) {
+                    return membersOnDate.filter(member => member.WFH_Type === statusFilter);
+                }
 
                 return membersOnDate.map(member => ({
                     ...member,
@@ -171,10 +175,52 @@ function LeftFilterPanel({ selectedDateRange }) {
 
             {selectedTeam && (
                 <>
-                    <h2 className="text-lg font-bold mb-4 flex justify-between items-center">Members
-                        <span className="ml-2 bg-black text-white rounded-full w-8 h-6 flex items-center justify-center text-xs font-bold">
-                            {getMembers(selectedDepartment, selectedTeam).length}
-                        </span>
+                    <h2 className="text-lg font-bold mb-4 flex items-center justify-between">
+                    {/* "Members" flushed to the left */}
+                        <div className="flex items-center">Members</div>
+
+                    {/* Container for Buttons */}
+                        <div className="flex space-x-4 items-end">
+                            {selectedDateRange?.start?.getTime() === selectedDateRange?.end?.getTime() ? (
+                            // Render the 4 buttons if a single day is selected
+                            <>
+                                {/* AM Label and Button */}
+                                <div className="flex flex-col items-center">
+                                    <div className="text-xs mb-1">AM</div>
+                                    <div className="bg-tag-grey-light text-tag-grey-dark rounded-full w-8 h-6 flex items-center justify-center text-xs font-bold"> {getMembers(selectedDepartment, selectedTeam, "AM").length} </div>
+                                </div>
+
+                                {/* PM Label and Button */}
+                                <div className="flex flex-col items-center">
+                                    <div className="text-xs mb-1">PM</div>
+                                    <div className="bg-tag-grey-light text-tag-grey-dark rounded-full w-8 h-6 flex items-center justify-center text-xs font-bold">
+                                        {getMembers(selectedDepartment, selectedTeam, "PM").length}
+                                    </div>
+                                </div>
+
+                                {/* WD Label and Button */}
+                                <div className="flex flex-col items-center">
+                                    <div className="text-xs mb-1">WD</div>
+                                    <div className="bg-tag-grey-light text-tag-grey-dark rounded-full w-8 h-6 flex items-center justify-center text-xs font-bold">
+                                        {getMembers(selectedDepartment, selectedTeam, "WD").length}
+                                    </div>
+                                </div>
+
+                                {/* IN Label and Button */}
+                                <div className="flex flex-col items-center">
+                                    <div className="text-xs mb-1">IN</div>
+                                    <div className="bg-tag-green-light text-tag-green-dark rounded-full w-8 h-6 flex items-center justify-center text-xs font-bold">
+                                        {getMembers(selectedDepartment, selectedTeam, "IN").length}
+                                    </div>
+                                </div>
+                            </>
+                            ) : (
+                            // Render a single button if more than one day is selected
+                                    <div className="bg-black text-white rounded-full w-8 h-6 flex items-center justify-center text-xs font-bold">
+                                        {getMembers(selectedDepartment, selectedTeam).length}
+                                    </div>
+                            )}
+                        </div>
                     </h2>
                     <div className='overflow-y-auto max-h-[50vh]'>
                         <ul>
