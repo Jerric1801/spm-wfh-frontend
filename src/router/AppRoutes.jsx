@@ -9,6 +9,8 @@ import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard';
 import Request from '../pages/Request';
 
+import { ScheduleProvider } from '../context/ScheduleContext';
+
 const AppRoutes = () => {
     const location = useLocation();
 
@@ -31,11 +33,13 @@ const AppRoutes = () => {
         <div className="full-viewport-container bg-white flex font-os">
             {renderNavBar()}
             <div className={getMainContentClass()}>
-                <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/request" element={<Request />} />
-                </Routes>
+                <ScheduleProvider>
+                    <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/request" element={<Request />} />
+                    </Routes>
+                </ScheduleProvider>
             </div>
         </div>
     );

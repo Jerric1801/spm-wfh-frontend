@@ -238,5 +238,245 @@
       "in": 60,
       "wfh": 40
     }
+  },
+  {
+    "date": "2024-10-01",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 30,
+      "wfh": 20
+    }
+  },
+  {
+    "date": "2024-10-02",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 55,
+      "wfh": 45
+    }
+  },
+  {
+    "date": "2024-10-03",
+    "wfhStatus": "WFH Confirmed",
+    "wfhPercentage": {
+      "in": 40,
+      "wfh": 60
+    }
+  },
+  {
+    "date": "2024-10-04",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 90,
+      "wfh": 10
+    }
+  },
+  {
+    "date": "2024-10-05",
+    "wfhStatus": "Public Holiday",
+    "wfhPercentage": {
+      "in": 100,
+      "wfh": 0
+    }
+  },
+  {
+    "date": "2024-10-06",
+    "wfhStatus": "WFH Rejected",
+    "wfhPercentage": {
+      "in": 80,
+      "wfh": 20
+    }
+  },
+  {
+    "date": "2024-10-07",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 95,
+      "wfh": 5
+    }
+  },
+  {
+    "date": "2024-10-08",
+    "wfhStatus": "WFH Pending",
+    "wfhPercentage": {
+      "in": 65,
+      "wfh": 35
+    }
+  },
+  {
+    "date": "2024-10-09",
+    "wfhStatus": "WFH Confirmed",
+    "wfhPercentage": {
+      "in": 45,
+      "wfh": 55
+    }
+  },
+  {
+    "date": "2024-10-10",
+    "wfhStatus": "WFH Rejected",
+    "wfhPercentage": {
+      "in": 70,
+      "wfh": 30
+    }
+  },
+  {
+    "date": "2024-10-11",
+    "wfhStatus": "WFH Pending",
+    "wfhPercentage": {
+      "in": 60,
+      "wfh": 40
+    }
+  },
+  {
+    "date": "2024-10-12",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 85,
+      "wfh": 15
+    }
+  },
+  {
+    "date": "2024-10-13",
+    "wfhStatus": "WFH Confirmed",
+    "wfhPercentage": {
+      "in": 35,
+      "wfh": 65
+    }
+  },
+  {
+    "date": "2024-10-14",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 90,
+      "wfh": 10
+    }
+  },
+  {
+    "date": "2024-10-15",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 75,
+      "wfh": 25
+    }
+  },
+  {
+    "date": "2024-10-16",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 65,
+      "wfh": 35
+    }
+  },
+  {
+    "date": "2024-10-17",
+    "wfhStatus": "WFH Confirmed",
+    "wfhPercentage": {
+      "in": 50,
+      "wfh": 50
+    }
+  },
+  {
+    "date": "2024-10-18",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 70,
+      "wfh": 30
+    }
+  },
+  {
+    "date": "2024-10-19",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 90,
+      "wfh": 10
+    }
+  },
+  {
+    "date": "2024-10-20",
+    "wfhStatus": "WFH Pending",
+    "wfhPercentage": {
+      "in": 60,
+      "wfh": 40
+    }
+  },
+  {
+    "date": "2024-10-21",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 95,
+      "wfh": 5
+    }
+  },
+  {
+    "date": "2024-10-22",
+    "wfhStatus": "WFH Confirmed",
+    "wfhPercentage": {
+      "in": 40,
+      "wfh": 60
+    }
+  },
+  {
+    "date": "2024-10-23",
+    "wfhStatus": "WFH Rejected",
+    "wfhPercentage": {
+      "in": 75,
+      "wfh": 25
+    }
+  },
+  {
+    "date": "2024-10-24",
+    "wfhStatus": "WFH Pending",
+    "wfhPercentage": {
+      "in": 65,
+      "wfh": 35
+    }
+  },
+  {
+    "date": "2024-10-25",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 85,
+      "wfh": 15
+    }
+  },
+  {
+    "date": "2024-10-26",
+    "wfhStatus": "WFH Confirmed",
+    "wfhPercentage": {
+      "in": 45,
+      "wfh": 55
+    }
+  },
+  {
+    "date": "2024-10-27",
+    "wfhStatus": "WFH Rejected",
+    "wfhPercentage": {
+      "in": 70,
+      "wfh": 30
+    }
+  },
+  {
+    "date": "2024-10-28",
+    "wfhStatus": "In Office",
+    "wfhPercentage": {
+      "in": 90,
+      "wfh": 10
+    }
+  },
+  {
+    "date": "2024-10-29",
+    "wfhStatus": "WFH Pending",
+    "wfhPercentage": {
+      "in": 60,
+      "wfh": 40
+    }
+  },
+  {
+    "date": "2024-10-30",
+    "wfhStatus": "WFH Pending",
+    "wfhPercentage": {
+      "in": 60,
+      "wfh": 40
+    }
   }
 ]

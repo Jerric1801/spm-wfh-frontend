@@ -14,6 +14,8 @@ module.exports = {
         white: '#F6F6F6',
         green: '#2EA06B',
         beige: '#FAE7D5',
+        orange: '#FF9F2D',
+        red: '#E92C2C',
         //accent
         'light-green' : '#E5F8EB',
 

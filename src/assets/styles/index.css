@@ -9,3 +9,36 @@
     height: 100vh;
     overflow: auto;
 }
+
+/* nav */
+
+.nav-link {
+    padding: 10px;
+}
+
+.active-link img {
+    border-radius: 10px;
+    background-color: #2EA06B;
+    padding: 10px;
+}
+
+
+/* scrollbar */
+/* 
+.overflow-scroll {
+    scrollbar-width: thin; 
+    overflow-y: scroll;
+  }
+  
+  .overflow-scroll::-webkit-scrollbar {
+    width: 6px; 
+  }
+  
+  .overflow-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+  }
+  
+  .overflow-scroll::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  } */

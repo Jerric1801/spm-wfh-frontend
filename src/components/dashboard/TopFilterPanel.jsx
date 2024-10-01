@@ -74,7 +74,7 @@ function TopFilterPanel({ currentMonth, setCurrentMonth, startDate = new Date(),
                 <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden flex flex-row">
                     {stats.inOffice > 0 && (
                         <div
-                            className="h-full bg-blue-500 flex justify-center align-center transition-all duration-300 ease-in-out" // Add transition class here
+                            className="h-full bg-green flex justify-center align-center transition-all duration-300 ease-in-out" // Add transition class here
                             style={{ width: `${(stats.inOffice / total) * 100}%` }}
                         >
                             <span className="text-white ml-2 text-xs">{stats.inOffice.toFixed(1)}%</span>
@@ -82,7 +82,7 @@ function TopFilterPanel({ currentMonth, setCurrentMonth, startDate = new Date(),
                     )}
                     {stats.wfh > 0 && (
                         <div
-                            className="h-full bg-yellow-500 flex justify-center align-center transition-all duration-300 ease-in-out" // Add transition class here
+                            className="h-full bg-orange flex justify-center align-center transition-all duration-300 ease-in-out" // Add transition class here
                             style={{ width: `${(stats.wfh / total) * 100}%` }}
                         >
                             <span className="text-white ml-2 text-xs">{stats.wfh.toFixed(1)}%</span>
@@ -90,31 +90,31 @@ function TopFilterPanel({ currentMonth, setCurrentMonth, startDate = new Date(),
                     )}
                     {stats.away > 0 && (
                         <div
-                            className="h-full bg-red-500 flex justify-center align-center transition-all duration-300 ease-in-out" // Add transition class here
+                            className="h-full bg-red flex justify-center align-center transition-all duration-300 ease-in-out" // Add transition class here
                             style={{ width: `${(stats.away / total) * 100}%` }}
                         >
                             <span className="text-white ml-2 text-xs">{stats.away.toFixed(0)}%</span>
                         </div>
                     )}
                 </div>
-                <div className="mt-2 flex flex-start gap-3 w-full"> {/* Legend */}
+                <div className="mt-2 flex flex-start gap-3 w-full"> 
                     <div className="flex items-center">
-                        <div className="w-3 h-3 bg-blue-500 mr-1 "></div>
+                        <div className="w-3 h-3 bg-green mr-1 "></div>
                         <span>In Office</span>
                     </div>
                     <div className="flex items-center">
-                        <div className="w-3 h-3 bg-yellow-500 mr-1"></div>
+                        <div className="w-3 h-3 bg-orange mr-1"></div>
                         <span>WFH</span>
                     </div>
                     <div className="flex items-center">
-                        <div className="w-3 h-3 bg-red-500 mr-1"></div>
+                        <div className="w-3 h-3 bg-red mr-1"></div>
                         <span>Away</span>
                     </div>
                 </div>
             </div>
-            <div className="w-[25%] h-[100%] flex flex-col justify-center items-center">
+            <div className="w-[25%] h-[100%] flex flex-col justify-center items-center overflow-hidden">
                 <Button text="Apply WFH" />
-                <div className="mt-3 border border-gray-300 rounded-[10px] p-3 font-bold">
+                <div className="mt-3 border border-gray-300 rounded-[10px] p-3 font-bold ">
                     {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
                 </div>
             </div>
