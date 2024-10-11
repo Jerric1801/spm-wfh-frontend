@@ -1,4 +1,5 @@
 import Button from '../common/Button';
+import "../../assets/styles/applyWFHModal.css";
 import { useState, useEffect, useContext } from 'react';
 import { isSameDay } from 'date-fns';
 import calendarData from '../../data/dashboard/calendar.json'
@@ -6,6 +7,11 @@ import { ScheduleContext } from '../../context/ScheduleContext';
 
 function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Date() }) {
     const { setCurrentMonth } = useContext(ScheduleContext);
+    const [modal, setModal] = useState(false);
+
+    const sendRequest = () =>{
+        // TODO 
+    };
 
     const handleMonthChange = (direction) => {
         const newDate = new Date(currentMonth);
@@ -13,6 +19,14 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
         setCurrentMonth(newDate); 
     };
 
+    const openApplyWFHModal = () =>{
+        //console.log('opening modal');
+        setModal(true);
+    };
+
+    const closeApplyWFHModal = () =>{
+        setModal(false);
+    };
 
     const tempData = calendarData;
 
@@ -65,6 +79,7 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
     const total = stats.inOffice + stats.wfh + stats.away;
 
     return (
+        <>
         <div className="w-[100%] h-[100%] flex gap-10 flex-row p-2">
             <div className="w-[20%] h-[100%] flex flex-col flex-start justify-center pl-2 gap-2">
                 <span className="w-full text-[30px] font-bold">{currentMonth.toLocaleString('default', { month: 'long' })} </span>
@@ -117,12 +132,43 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
                 </div>
             </div>
             <div className="w-[25%] h-[100%] flex flex-col justify-center items-center overflow-hidden">
-                <Button text="Apply WFH" />
+                <Button text="Apply WFH" onClick={() => openApplyWFHModal()} />
                 <div className="mt-3 border border-gray-300 rounded-[10px] p-3 font-bold ">
                     {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
                 </div>
             </div>
         </div>
+
+        {modal &&(
+            <div className="modal">
+                <div onClick={closeApplyWFHModal} className="overlay">hellooo</div>
+                <div className="modal-content">
+                    <br/>
+                    <span className="w-full text-[30px] font-bold justify-center">Apply for WFH</span>
+                    <br/>
+                    <br/>
+                    <span className="text-[20px] font-bold">Date Range</span> <Button text={startDate.toLocaleDateString()+' to '+endDate.toLocaleDateString()}></Button>
+                    to add calen
+                    <br/>
+                    <br/>
+                    <span className="text-[20px] font-bold">WFH Type</span> dropdown here
+                    <br/>
+                    <br/>
+                    <span className="text-[20px] font-bold">Reason</span> <input type='text'></input>
+                    <br/>
+                    <br/>
+                    
+                    <Button text="Send Request" color="bg-tag-green-dark text-white" onClick={() => sendRequest()} />
+                    <br/>
+                    <br/>
+                    <Button text="x Close" color="bg-tag-grey-dark text-white" onClick={() => closeApplyWFHModal()} />
+                
+                    
+                </div>
+            </div>
+        )}
+
+        </>
     );
 }
 
