@@ -4,10 +4,14 @@ import { useState, useEffect, useContext } from 'react';
 import { isSameDay } from 'date-fns';
 import calendarData from '../../data/dashboard/calendar.json'
 import { ScheduleContext } from '../../context/ScheduleContext';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Date() }) {
     const { setCurrentMonth } = useContext(ScheduleContext);
-    const [modal, setModal] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [showCalen, setShowCalen] = useState(false);
+    const [modalDateRange, setModalDateRange] = useState(`${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`);
 
     const sendRequest = () =>{
         // TODO 
@@ -17,15 +21,6 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
         const newDate = new Date(currentMonth);
         newDate.setMonth(newDate.getMonth() + direction);
         setCurrentMonth(newDate); 
-    };
-
-    const openApplyWFHModal = () =>{
-        //console.log('opening modal');
-        setModal(true);
-    };
-
-    const closeApplyWFHModal = () =>{
-        setModal(false);
     };
 
     const tempData = calendarData;
@@ -132,38 +127,74 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
                 </div>
             </div>
             <div className="w-[25%] h-[100%] flex flex-col justify-center items-center overflow-hidden">
-                <Button text="Apply WFH" onClick={() => openApplyWFHModal()} />
+                <Button text="Apply WFH" onClick={()=>setShowModal(true)} />
                 <div className="mt-3 border border-gray-300 rounded-[10px] p-3 font-bold ">
                     {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
                 </div>
             </div>
         </div>
 
-        {modal &&(
+        {showModal &&(
             <div className="modal">
-                <div onClick={closeApplyWFHModal} className="overlay">hellooo</div>
-                <div className="modal-content">
-                    <br/>
-                    <span className="w-full text-[30px] font-bold justify-center">Apply for WFH</span>
-                    <br/>
-                    <br/>
-                    <span className="text-[20px] font-bold">Date Range</span> <Button text={startDate.toLocaleDateString()+' to '+endDate.toLocaleDateString()}></Button>
-                    to add calen
+                <div onClick={()=>setShowModal(false)} className="overlay"></div>
+                <div className="modal-content flex flex-col justify-center">
+                    <div className="text-center">
+                        <span className="w-full text-[30px] font-bold">Apply for WFH</span>
+                    </div>
                     <br/>
                     <br/>
-                    <span className="text-[20px] font-bold">WFH Type</span> dropdown here
-                    <br/>
-                    <br/>
-                    <span className="text-[20px] font-bold">Reason</span> <input type='text'></input>
-                    <br/>
-                    <br/>
+
+                    <div className="flex">
+
+                        <div className="flex flex-col" style={{marginInline:'15px'}}>
+                            <div className="h-[10px]"></div>
+                            <span className="text-[20px] font-bold">Date Range</span> 
+                            <br/>
+                            <br/>
+                            <br/>
+                            <span className="text-[20px] font-bold">WFH Type</span> 
+                            <br/>
+                            <br/>
+                            <br/>
+                            <span className="text-[20px] font-bold">Reason</span> 
+                
+                        </div>
                     
+                        <div className="flex flex-col w-[60%]">
+                            <Button color="bg-white" onClick={()=>setShowCalen(!showCalen)} text={modalDateRange}></Button>
+                            
+                            <div className="col-span-9 row-span-9 shadow-md">
+                            {showCalen &&<Calendar style={{zIndex:'1',position:'absolute'}} selectRange={true} onChange={(range)=>setModalDateRange(`${range[0].toLocaleDateString()} to ${range[1].toLocaleDateString()}`)}
+                                />
+                            }
+                            </div>
+
+                            <br/>
+                            <br/>
+                            <select className="rounded-[10px] h-[50px] font-bold border-2" style={{padding:'10px'}}>
+                                <option>Full Day (FD)</option>
+                                <option>Morning only (AM)</option>
+                                <option>Afternoon only (PM)</option>
+                            </select>
+                            <br/>
+                            <br/>
+                            <textarea className="w-[250px] h-[150px] rounded-[10px]" style={{padding:'10px'}}></textarea>
+
+
+                        </div>
+                    </div>
+
+                    <br/>
+                    <br/>
+
+
+                    <div className="center-div">
                     <Button text="Send Request" color="bg-tag-green-dark text-white" onClick={() => sendRequest()} />
                     <br/>
                     <br/>
-                    <Button text="x Close" color="bg-tag-grey-dark text-white" onClick={() => closeApplyWFHModal()} />
-                
-                    
+                    <Button text="x Close" color="bg-tag-grey-dark text-white" onClick={() => setShowModal(false)} />
+                    </div>
+                    <br/>
                 </div>
             </div>
         )}
