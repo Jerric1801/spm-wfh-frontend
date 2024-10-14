@@ -93,12 +93,13 @@ function TeamRequest() {
           key: 'action',
           // Note: the colour will come when merged w Feature/ApproveWFH branch
           render: (record) => (
-            <>
-            <Button color="bg-green" text="Approval" onClick={() => approveRequest(record)}/>
-            <Button color="bg-red" text="Reject" onClick={() => rejectRequest(record)}/>
-            <img src={ExpandButton} alt="Expand Button"  style={{ height:'30px'}} onClick={()=>viewRequestDetails(record)}/>
+            <div className='flex'>
             
-            </>
+            <Button color="bg-green" width='150px' text="Approval" onClick={() => approveRequest(record)}/>
+            <Button color="bg-red"  width='150px' text="Reject" onClick={() => rejectRequest(record)}/>
+            <img src={ExpandButton} alt="Expand Button"  style={{ height:'30px',margin:'auto'}} onClick={()=>viewRequestDetails(record)}/>
+            
+            </div>
           ),
         },
       ];
@@ -125,7 +126,8 @@ function TeamRequest() {
             <div className="col-span-12 row-span-11 bg-gray-100 flex justify-center items-center">
                 <div className="w-[80%] h-[100%]" style={{padding:'20px'}}>
                 <span className="text-[30px] font-bold">Team's Pending Request</span>
-                <Table columns={columns} dataSource={dataSource} />
+                <br/><br/>
+                <Table columns={columns} dataSource={dataSource} className=""/>
                 </div>
 
                 <div className="w-[20%] h-[100%]" style={{padding:'5px'}}>
