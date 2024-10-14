@@ -1,7 +1,7 @@
 import Button from '../common/Button';
 import "../../assets/styles/applyWFHModal.css";
 import { useState, useEffect, useContext } from 'react';
-import { isSameDay, isBefore } from 'date-fns';
+import { isSameDay, isBefore, setMinutes, setHours, } from 'date-fns';
 import calendarData from '../../data/dashboard/calendar.json'
 import { ScheduleContext } from '../../context/ScheduleContext';
 import Calendar from 'react-calendar';
@@ -29,14 +29,22 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
         }else{*/
         const today = new Date();
         console.log(WFHRange); //
+        console.log(today); //
+        /*
         console.log(today);
         console.log(isBefore(WFHRange[0],today));
         //console.log(isBefore(WFHRange[1],today));
+        console.log('isSameDay');
+        console.log(isSameDay(WFHRange[0],today));
+        */
         if(isSameDay(WFHRange[0],today)){
             // check if now is AM
-            const todayNoon = setMinutes(setHours(new Date(), 12), 0)
-            if(!(isBefore(WFHRange[0],todayNoon) && WFHType=='Afternoon only (PM)')){
-                alert('Please ensure the date range starts AFTER today. Same-day leave is only applicable in the morning for an afternoon leave.');
+            const todayNoon = setMinutes(setHours(new Date(), 12), 0);
+            if(!(isBefore(today,todayNoon) && WFHType=='Afternoon only (PM)')){
+                alert('Please ensure the date range starts AFTER today. Same-day WFH arrangement is only applicable in the morning for an afternoon WFH.');
+                error += 1;
+            }else{
+                alert('You are applying for same day WFH arrangement. Please ensure your request has been approved before going home.');
             }
 
         }
@@ -61,7 +69,16 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
                 // TODO send request to backend and fetch status
                 // employee JWT
                 // range,WFHType, WFHReason
+
                 // return status success/failure to inform user
+                const status = true;
+
+                if(status){
+                    alert('WFH request successfully submitted!');
+                }else{
+                    alert('There was an error in submitting your WFH request, please try again.');
+                }
+                
             }
 
         }
