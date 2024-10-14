@@ -29,7 +29,7 @@ function TeamRequest() {
           Reason: 'Birthday whee',
           },
           {
-            key: '1',
+            key: '3',
             id: '56674',
             member: 'Mary Teo',
             dateRange: '1 Nov - 2 Nov',
@@ -37,7 +37,7 @@ function TeamRequest() {
           Reason: 'Babysitting',
           },
           {
-            key: '1',
+            key: '4',
             id: '79500',
             member: 'Noah Ng',
             dateRange: '20 Dec - 31 Dec',
@@ -45,7 +45,7 @@ function TeamRequest() {
           Reason: 'Overseas for holiday',
           },
           {
-            key: '1',
+            key: '5',
             id: '67633',
             member: 'Heng Chan',
             dateRange: '2 Nov - 24 Nov',
@@ -53,7 +53,7 @@ function TeamRequest() {
           Reason: 'Babysitting',
           },
           {
-            key: '1',
+            key: '6',
             id: '63405',
             member: 'Rina Tan',
             dateRange: '30 Oct - 2 Nov',
@@ -94,23 +94,23 @@ function TeamRequest() {
           // Note: the colour will come when merged w Feature/ApproveWFH branch
           render: (record) => (
             <div className='flex'>
-            
-            <Button color="bg-green" width='150px' text="Approval" onClick={() => approveRequest(record)}/>
-            <Button color="bg-red"  width='150px' text="Reject" onClick={() => rejectRequest(record)}/>
-            <img src={ExpandButton} alt="Expand Button"  style={{ height:'30px',margin:'auto'}} onClick={()=>viewRequestDetails(record)}/>
-            
+              <Button color="bg-green" width='150px' text="Approval" onClick={() => approveRequest(record)}/>
+                <div style={{width:'10px'}}></div>
+              <Button color="bg-red"  width='150px'  text="Reject" onClick={() => rejectRequest(record)}/>
+              <img src={ExpandButton} alt="Expand Button"  style={{ height:'30px',margin:'auto'}} onClick={()=>viewRequestDetails(record)}/>
+              
             </div>
           ),
         },
       ];
       
     const approveRequest = (rowData) => {
-        console.log('Action clicked for:', rowData);
+        console.log('Approve:', rowData);
     };
       
 
     const rejectRequest = (rowData) => {
-        console.log('Action clicked for:', rowData);
+        console.log('Reject:', rowData);
     };
       
     const viewRequestDetails = (rowData) => {
