@@ -1,6 +1,7 @@
 import CompanyLogo from "../../assets/images/all-in-one_logo.png";
 import RequestPageIcon from "../../assets/images/request-page-icon.png";
 
+
 function NavBar() {
     return (
         <div className="w-[100%] h-[100%]" style={{ paddingTop: '20px' }}>
