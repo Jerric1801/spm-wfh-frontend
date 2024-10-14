@@ -8,7 +8,7 @@ import NavBar from '../components/layout/NavBar'
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard';
 import Request from '../pages/Request';
-import Teams from '../pages/Teams'
+import TeamRequest from '../pages/Teams'
 
 const AppRoutes = () => {
     const location = useLocation();
@@ -36,7 +36,7 @@ const AppRoutes = () => {
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/request" element={<Request />} />
-                    <Route path="/teams" element={<Teams />} />
+                    <Route path="/teams" element={<TeamRequest />} />
                 </Routes>
             </div>
         </div>
