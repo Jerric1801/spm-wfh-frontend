@@ -32,7 +32,15 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
         console.log(today);
         console.log(isBefore(WFHRange[0],today));
         //console.log(isBefore(WFHRange[1],today));
-        if(isBefore(WFHRange[0],today)){ //if before today 
+        if(isSameDay(WFHRange[0],today)){
+            // check if now is AM
+            const todayNoon = setMinutes(setHours(new Date(), 12), 0)
+            if(!(isBefore(WFHRange[0],todayNoon) && WFHType=='Afternoon only (PM)')){
+                alert('Please ensure the date range starts AFTER today. Same-day leave is only applicable in the morning for an afternoon leave.');
+            }
+
+        }
+        else if(isBefore(WFHRange[0],today)){ //if before today 
             // TODO handle AM book for PM clause
             alert('Please ensure the date range starts AFTER today');
             error +=1;
