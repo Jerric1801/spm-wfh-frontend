@@ -1,7 +1,7 @@
 import Button from '../common/Button';
 import "../../assets/styles/applyWFHModal.css";
 import { useState, useEffect, useContext } from 'react';
-import { isSameDay } from 'date-fns';
+import { isSameDay, isBefore } from 'date-fns';
 import calendarData from '../../data/dashboard/calendar.json'
 import { ScheduleContext } from '../../context/ScheduleContext';
 import Calendar from 'react-calendar';
@@ -12,10 +12,63 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
     const [showModal, setShowModal] = useState(false);
     const [showCalen, setShowCalen] = useState(false);
     const [modalDateRange, setModalDateRange] = useState(`${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`);
+    
+    const [WFHRange,setWFHRange] = useState([new Date(),new Date()]);
+    console.log(WFHRange);
+    const [WFHType,setWFHType] = useState('');
+    const [WFHReason,setWFHReason] = useState('');
 
-    const sendRequest = () =>{
-        // TODO 
+    const sendRequest = (event) => {
+        event.preventDefault();
+        let error = 0;
+
+        /*
+        if (WFHRange==[0,0]){
+            alert('Please select WFH date range!');
+            error +=1;
+        }else{*/
+        const today = new Date();
+        console.log(WFHRange); //
+        console.log(today);
+        console.log(isBefore(WFHRange[0],today));
+        //console.log(isBefore(WFHRange[1],today));
+        if(isBefore(WFHRange[0],today)){ //if before today 
+            // TODO handle AM book for PM clause
+            alert('Please ensure the date range starts AFTER today');
+            error +=1;
+        }
+        //}
+
+        if (WFHType==''){
+            alert('Please select WFH type!');
+            error +=1;
+        }
+        if (WFHReason==''){
+            alert('Please input your reason for WFH!');
+            error +=1;
+        }
+
+        if (error==0){
+            if(confirm('Confirm submission of WFH request?')){
+                // TODO send request to backend and fetch status
+                // employee JWT
+                // range,WFHType, WFHReason
+                // return status success/failure to inform user
+            }
+
+        }
     };
+
+    useEffect(() => {
+        console.log('Update range', WFHRange);
+        setModalDateRange(`${WFHRange[0].toLocaleDateString()} to ${WFHRange[1].toLocaleDateString()}`);
+     }, [WFHRange]);
+        
+
+    const handleCalenButton = (e) =>{
+        e.preventDefault();
+        setShowCalen(!showCalen);
+    }
 
     const handleMonthChange = (direction) => {
         const newDate = new Date(currentMonth);
@@ -143,58 +196,62 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
                     </div>
                     <br/>
                     <br/>
+                    <form onSubmit={sendRequest}>
+                        <div className="flex">
 
-                    <div className="flex">
-
-                        <div className="flex flex-col" style={{marginInline:'15px'}}>
-                            <div className="h-[10px]"></div>
-                            <span className="text-[20px] font-bold">Date Range</span> 
-                            <br/>
-                            <br/>
-                            <br/>
-                            <span className="text-[20px] font-bold">WFH Type</span> 
-                            <br/>
-                            <br/>
-                            <br/>
-                            <span className="text-[20px] font-bold">Reason</span> 
-                
-                        </div>
+                            <div className="flex flex-col" style={{marginInline:'15px'}}>
+                                <div className="h-[10px]"></div>
+                                <span className="text-[20px] font-bold">Date Range</span> 
+                                <br/>
+                                <br/>
+                                <br/>
+                                <span className="text-[20px] font-bold">WFH Type</span> 
+                                <br/>
+                                <br/>
+                                <br/>
+                                <span className="text-[20px] font-bold">Reason</span> 
                     
-                        <div className="flex flex-col w-[60%]">
-                            <Button color="bg-white" onClick={()=>setShowCalen(!showCalen)} text={modalDateRange}></Button>
-                            
-                            <div className="col-span-9 row-span-9 shadow-md">
-                            {showCalen &&<Calendar style={{zIndex:'1',position:'absolute'}} selectRange={true} onChange={(range)=>setModalDateRange(`${range[0].toLocaleDateString()} to ${range[1].toLocaleDateString()}`)}
-                                />
-                            }
                             </div>
+                        
+                            <div className="flex flex-col w-[60%]">
+                                <Button color="bg-white" onClick={(e)=>handleCalenButton(e)} text={modalDateRange}></Button>
+                                
+                                <div className="col-span-9 row-span-9 shadow-md">
+                                {showCalen &&<Calendar style={{zIndex:'100001',position:'absolute',top:'100%',left:'0'}} 
+                                selectRange={true} 
+                                onChange={setWFHRange}
+                                    />
+                                }
+                                </div>
 
-                            <br/>
-                            <br/>
-                            <select className="rounded-[10px] h-[50px] font-bold border-2" style={{padding:'10px'}}>
-                                <option>Full Day (FD)</option>
-                                <option>Morning only (AM)</option>
-                                <option>Afternoon only (PM)</option>
-                            </select>
-                            <br/>
-                            <br/>
-                            <textarea className="w-[250px] h-[150px] rounded-[10px]" style={{padding:'10px'}}></textarea>
+                                <br/>
+                                <br/>
+                                <select className="rounded-[10px] h-[50px] font-bold border-2" style={{padding:'10px'}} value={WFHType} onChange={(e)=>setWFHType(e.target.value)}>
+                                    <option  selected></option>
+                                    <option>Full Day (FD)</option>
+                                    <option>Morning only (AM)</option>
+                                    <option>Afternoon only (PM)</option>
+                                </select>
+                                <br/>
+                                <br/>
+                                <textarea className="w-[250px] h-[150px] rounded-[10px]" style={{padding:'10px'}}  value={WFHReason} onChange={(e)=>setWFHReason(e.target.value)}></textarea>
 
 
+                            </div>
                         </div>
-                    </div>
 
-                    <br/>
-                    <br/>
+                        <br/>
+                        <br/>
 
 
-                    <div className="center-div">
-                    <Button text="Send Request" color="bg-tag-green-dark text-white" onClick={() => sendRequest()} />
-                    <br/>
-                    <br/>
-                    <Button text="x Close" color="bg-tag-grey-dark text-white" onClick={() => setShowModal(false)} />
-                    </div>
-                    <br/>
+                        <div className="center-div">
+                            <Button text="Send Request" color="bg-green text-white" onClick={() => sendRequest()} />
+                            <br/>
+                            <br/>
+                            <Button text="x Close" color="bg-tag-grey-dark text-white" onClick={() => setShowModal(false)} />
+                        </div>
+                        <br/>
+                    </form>
                 </div>
             </div>
         )}
