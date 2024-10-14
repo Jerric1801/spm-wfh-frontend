@@ -33,13 +33,15 @@ const AppRoutes = () => {
         <div className="full-viewport-container bg-white flex font-os">
             {renderNavBar()}
             <div className={getMainContentClass()}>
-                <ScheduleProvider>
-                    <Routes>
-                        <Route path="/" element={<Dashboard />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/request" element={<Request />} />
-                    </Routes>
-                </ScheduleProvider>
+                <Routes>
+                    <Route path="/" element={
+                        <ScheduleProvider>
+                            <Dashboard />
+                        </ScheduleProvider>
+                    } />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/request" element={<Request />} />
+                </Routes>
             </div>
         </div>
     );

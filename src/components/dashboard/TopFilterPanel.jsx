@@ -14,7 +14,6 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
     const [modalDateRange, setModalDateRange] = useState(`${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`);
     
     const [WFHRange,setWFHRange] = useState([new Date(),new Date()]);
-    console.log(WFHRange);
     const [WFHType,setWFHType] = useState('');
     const [WFHReason,setWFHReason] = useState('');
 
@@ -28,8 +27,6 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
             error +=1;
         }else{*/
         const today = new Date();
-        console.log(WFHRange); //
-        console.log(today); //
         /*
         console.log(today);
         console.log(isBefore(WFHRange[0],today));
@@ -85,7 +82,6 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
     };
 
     useEffect(() => {
-        console.log('Update range', WFHRange);
         setModalDateRange(`${WFHRange[0].toLocaleDateString()} to ${WFHRange[1].toLocaleDateString()}`);
      }, [WFHRange]);
         

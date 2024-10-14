@@ -14,7 +14,6 @@ const ScheduleProvider = ({ children }) => {
 
     useEffect(() => {
         const fetchSchedule = async () => {
-            console.log('fetching')
             try {
                 const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
                 const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
