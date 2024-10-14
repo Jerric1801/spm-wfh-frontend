@@ -1,18 +1,105 @@
 import Button from '../common/Button';
+import "../../assets/styles/applyWFHModal.css";
 import { useState, useEffect, useContext } from 'react';
-import { isSameDay } from 'date-fns';
+import { isSameDay, isBefore, setMinutes, setHours, } from 'date-fns';
 import calendarData from '../../data/dashboard/calendar.json'
 import { ScheduleContext } from '../../context/ScheduleContext';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Date() }) {
     const { setCurrentMonth } = useContext(ScheduleContext);
+    const [showModal, setShowModal] = useState(false);
+    const [showCalen, setShowCalen] = useState(false);
+    const [modalDateRange, setModalDateRange] = useState(`${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`);
+    
+    const [WFHRange,setWFHRange] = useState([new Date(),new Date()]);
+    console.log(WFHRange);
+    const [WFHType,setWFHType] = useState('');
+    const [WFHReason,setWFHReason] = useState('');
+
+    const sendRequest = (event) => {
+        event.preventDefault();
+        let error = 0;
+
+        /*
+        if (WFHRange==[0,0]){
+            alert('Please select WFH date range!');
+            error +=1;
+        }else{*/
+        const today = new Date();
+        console.log(WFHRange); //
+        console.log(today); //
+        /*
+        console.log(today);
+        console.log(isBefore(WFHRange[0],today));
+        //console.log(isBefore(WFHRange[1],today));
+        console.log('isSameDay');
+        console.log(isSameDay(WFHRange[0],today));
+        */
+        if(isSameDay(WFHRange[0],today)){
+            // check if now is AM
+            const todayNoon = setMinutes(setHours(new Date(), 12), 0);
+            if(!(isBefore(today,todayNoon) && WFHType=='Afternoon only (PM)')){
+                alert('Please ensure the date range starts AFTER today. Same-day WFH arrangement is only applicable in the morning for an afternoon WFH.');
+                error += 1;
+            }else{
+                alert('You are applying for same day WFH arrangement. Please ensure your request has been approved before going home.');
+            }
+
+        }
+        else if(isBefore(WFHRange[0],today)){ //if before today 
+            // TODO handle AM book for PM clause
+            alert('Please ensure the date range starts AFTER today');
+            error +=1;
+        }
+        //}
+
+        if (WFHType==''){
+            alert('Please select WFH type!');
+            error +=1;
+        }
+        if (WFHReason==''){
+            alert('Please input your reason for WFH!');
+            error +=1;
+        }
+
+        if (error==0){
+            if(confirm('Confirm submission of WFH request?')){
+                // TODO send request to backend and fetch status
+                // employee JWT
+                // range,WFHType, WFHReason
+
+                // return status success/failure to inform user
+                const status = true;
+
+                if(status){
+                    alert('WFH request successfully submitted!');
+                }else{
+                    alert('There was an error in submitting your WFH request, please try again.');
+                }
+                
+            }
+
+        }
+    };
+
+    useEffect(() => {
+        console.log('Update range', WFHRange);
+        setModalDateRange(`${WFHRange[0].toLocaleDateString()} to ${WFHRange[1].toLocaleDateString()}`);
+     }, [WFHRange]);
+        
+
+    const handleCalenButton = (e) =>{
+        e.preventDefault();
+        setShowCalen(!showCalen);
+    }
 
     const handleMonthChange = (direction) => {
         const newDate = new Date(currentMonth);
         newDate.setMonth(newDate.getMonth() + direction);
         setCurrentMonth(newDate); 
     };
-
 
     const tempData = calendarData;
 
@@ -65,6 +152,7 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
     const total = stats.inOffice + stats.wfh + stats.away;
 
     return (
+        <>
         <div className="w-[100%] h-[100%] flex gap-10 flex-row p-2">
             <div className="w-[20%] h-[100%] flex flex-col flex-start justify-center pl-2 gap-2">
                 <span className="w-full text-[30px] font-bold">{currentMonth.toLocaleString('default', { month: 'long' })} </span>
@@ -117,12 +205,83 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
                 </div>
             </div>
             <div className="w-[25%] h-[100%] flex flex-col justify-center items-center overflow-hidden">
-                <Button text="Apply WFH" />
+                <Button text="Apply WFH" onClick={()=>setShowModal(true)} />
                 <div className="mt-3 border border-gray-300 rounded-[10px] p-3 font-bold ">
                     {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
                 </div>
             </div>
         </div>
+
+        {showModal &&(
+            <div className="modal">
+                <div onClick={()=>setShowModal(false)} className="overlay"></div>
+                <div className="modal-content flex flex-col justify-center">
+                    <div className="text-center">
+                        <span className="w-full text-[30px] font-bold">Apply for WFH</span>
+                    </div>
+                    <br/>
+                    <br/>
+                    <form onSubmit={sendRequest}>
+                        <div className="flex">
+
+                            <div className="flex flex-col" style={{marginInline:'15px'}}>
+                                <div className="h-[10px]"></div>
+                                <span className="text-[20px] font-bold">Date Range</span> 
+                                <br/>
+                                <br/>
+                                <br/>
+                                <span className="text-[20px] font-bold">WFH Type</span> 
+                                <br/>
+                                <br/>
+                                <br/>
+                                <span className="text-[20px] font-bold">Reason</span> 
+                    
+                            </div>
+                        
+                            <div className="flex flex-col w-[60%]">
+                                <Button color="bg-white" onClick={(e)=>handleCalenButton(e)} text={modalDateRange}></Button>
+                                
+                                <div className="col-span-9 row-span-9 shadow-md">
+                                {showCalen &&<Calendar style={{zIndex:'100001',position:'absolute',top:'100%',left:'0'}} 
+                                selectRange={true} 
+                                onChange={setWFHRange}
+                                    />
+                                }
+                                </div>
+
+                                <br/>
+                                <br/>
+                                <select className="rounded-[10px] h-[50px] font-bold border-2" style={{padding:'10px'}} value={WFHType} onChange={(e)=>setWFHType(e.target.value)}>
+                                    <option  selected></option>
+                                    <option>Full Day (FD)</option>
+                                    <option>Morning only (AM)</option>
+                                    <option>Afternoon only (PM)</option>
+                                </select>
+                                <br/>
+                                <br/>
+                                <textarea className="w-[250px] h-[150px] rounded-[10px]" style={{padding:'10px'}}  value={WFHReason} onChange={(e)=>setWFHReason(e.target.value)}></textarea>
+
+
+                            </div>
+                        </div>
+
+                        <br/>
+                        <br/>
+
+
+                        <div className="center-div">
+                            <Button text="Send Request" color="bg-green text-white" onClick={() => sendRequest()} />
+                            <br/>
+                            <br/>
+                            <Button text="x Close" color="bg-tag-grey-dark text-white" onClick={() => setShowModal(false)} />
+                        </div>
+                        <br/>
+                    </form>
+                </div>
+            </div>
+        )}
+
+        </>
     );
 }
 
