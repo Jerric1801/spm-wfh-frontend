@@ -1,13 +1,28 @@
 import TopProfileBar from '../components/dashboard/TopProfileBar'
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import {Table} from 'antd';
+import React, { useState } from 'react';  // Add this import
+import {Table, Modal} from 'antd';
 import Button from '../components/common/Button';
 import ExpandButton from '../assets/images/expand.png';
 import {isSameDay} from 'date-fns';
 
 
 function TeamRequest() {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+
+  const viewRequestDetails = (record) => {
+      console.log('View details for:', record);
+      setSelectedRecord(record);
+      setIsModalVisible(true);
+  }
+
+  const handleCloseModal = () => {
+      setIsModalVisible(false);
+      setSelectedRecord(null);
+  }
+
     // low priority TODO fetch blockout dates
     const blackoutDates = [{'date':'2024-10-24','reason':'Townhall'},
         {'date':'2024-10-31','reason':'Big boss meeting'},
@@ -157,7 +172,7 @@ function TeamRequest() {
         Date Range: ${rowData.dateRange} 
         WFH Type: ${rowData.wfhType}
         Reason: ${rowData.reason}\n`));
-        }
+      }
       console.log(rejReason);
       if (rejReason!=null){
         // TODO: update reason into database
@@ -172,10 +187,6 @@ function TeamRequest() {
       
       }
 
-    };
-      
-    const viewRequestDetails = (rowData) => {
-        console.log('View details for:', rowData);
     };
 
     return (
@@ -205,8 +216,32 @@ function TeamRequest() {
                         })}
                     </div>
                 </div>
-                
             </div>
+            
+            {/* Modal */}
+            <Modal
+                title={`Details on Request #${selectedRecord?.id}`}
+                open={isModalVisible}
+                onCancel={handleCloseModal}
+                footer={[
+                    <Button text="Close" width='150px' color="bg-gray" onClick={handleCloseModal} />,
+                    
+              <Button color="bg-green" width="150px" text="Approval" onClick={() => approveRequest(selectedRecord)}/>,
+              <Button color="bg-red" width="150px" text="Reject" onClick={() => rejectRequest(selectedRecord)}/>,
+                ]}
+            >
+                {selectedRecord && (
+                    <div>
+                        <p><strong>Request ID:</strong> {selectedRecord.id}</p>
+                        <p><strong>Member:</strong> {selectedRecord.member}</p>
+                        <p><strong>Date Range:</strong> {selectedRecord.dateRange}</p>
+                        <p><strong>WFH Type:</strong> {selectedRecord.wfhType}</p>
+                        <p><strong>Reason:</strong> {selectedRecord.reason}</p>
+                        
+                    </div>
+                )}
+            </Modal>
+
         </div>
     );
 }
