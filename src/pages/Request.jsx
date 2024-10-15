@@ -133,7 +133,7 @@ function TeamRequest() {
           // Note: the colour will come when merged w Feature/ApproveWFH branch
           render: (record) => (
             <div className="flex">
-              <Button color="bg-green" width="150px" text="Approval" onClick={() => approveRequest(record)}/>
+              <Button color="bg-green" width="150px" text="Approve" onClick={() => approveRequest(record)}/>
               <div className="w-[10px]"></div>
               <Button color="bg-red" width="150px" text="Reject" onClick={() => rejectRequest(record)}/>
               <img src={ExpandButton} alt="Expand Button"  style={{ height:'30px',margin:'auto'}} onClick={()=>viewRequestDetails(record)}/>
@@ -226,7 +226,7 @@ function TeamRequest() {
                 footer={[<div className='flex'>
                       <Button text="Close" width='150px' color="bg-gray" onClick={handleCloseModal} />      
                       <div className="w-[10px]"></div>
-                      <Button color="bg-green" width="150px" text="Approval" onClick={() => approveRequest(selectedRecord)}/>
+                      <Button color="bg-green" width="150px" text="Approve" onClick={() => approveRequest(selectedRecord)}/>
                       <div className="w-[10px]"></div>
                       <Button color="bg-red" width="150px" text="Reject" onClick={() => rejectRequest(selectedRecord)}/>
                   </div>
