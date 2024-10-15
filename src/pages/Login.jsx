@@ -13,7 +13,7 @@ function Login() {
 
     let navigate = useNavigate();
 
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
 
         e.preventDefault();
 
@@ -65,11 +65,19 @@ function Login() {
                 } else {
                     setErrors(["An error occurred during login. Please try again."]);
                 }
-            } 
+            }
         });
 
         if (response.success) {
             navigate('/')
+        }
+        else {
+            setIsLoading(false)
+            if (response.message) {
+                setErrors([response.message]);
+            } else {
+                setErrors(["An error occurred during login. Please try again."]);
+            }
         }
     }
 
@@ -110,7 +118,7 @@ function Login() {
                             className={`w-full p-2 border ${errors.some(error => error.toLowerCase().includes("email")) ? "border-red-500" : "border-stroke-grey"} rounded`}
                         />
                         {errors.filter(error => error.toLowerCase().includes("email")).map((error, index) => (
-                            <p key={index} className="text-red-500">{error}</p>
+                            <p key={index} className="text-red">{error}</p>
                         ))}
                     </div>
                     <div className="mb-4">
@@ -122,7 +130,7 @@ function Login() {
                             className={`w-full p-2 border ${errors.some(error => error.toLowerCase().includes("password")) ? "border-red-500" : "border-stroke-grey"} rounded`}
                         />
                         {errors.filter(error => error.toLowerCase().includes("password")).map((error, index) => (
-                            <p key={index} className="text-red-500">{error}</p>
+                            <p key={index} className="text-red">{error}</p>
                         ))}
                     </div>
                     <div className="mb-4 text-right underline text-tag-blue-dark">
@@ -133,6 +141,9 @@ function Login() {
                     <div className="flex justify-center">
                         <Button type="submit" text={isLoading ? "Loading..." : "Login"} width="60%" height="50px" disabled={isLoading} />
                     </div>
+                    {errors.filter(error => error.toLowerCase().includes("invalid")).map((error, index) => (
+                        <p key={index} className="text-red mt-3 text-center">{error}</p>
+                    ))}
                 </form>
             </div>
         </div>

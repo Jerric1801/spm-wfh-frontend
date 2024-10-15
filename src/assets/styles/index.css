@@ -16,6 +16,13 @@
     overflow: auto;
 }
 
+.center-div {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 /* nav */
 
 .nav-link {
