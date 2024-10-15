@@ -1,10 +1,15 @@
 //Dashboard Components
+import React, { useState } from 'react';  // Add this import
 import TopProfileBar from '../components/dashboard/TopProfileBar';
-import { Table } from 'antd';
+import { Table, Modal } from 'antd';
 import Button from '../components/common/Button';
-import Tag from '../components/common/Tag'; // Use your Tag component
+import Tag from '../components/common/Tag'; 
+import ExpandButton from '../assets/images/expand.png';
 
 function Personal() {
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedRecord, setSelectedRecord] = useState(null);
+
     const dataSource = [
         {
             key: '1',
@@ -56,6 +61,16 @@ function Personal() {
         },
     ];
 
+    const viewRequestDetails = (record) => {
+        setSelectedRecord(record);
+        setIsModalVisible(true);
+    }
+
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+        setSelectedRecord(null);
+    }
+
     const columns = [
         {
             title: 'ID',
@@ -92,11 +107,16 @@ function Personal() {
         {
             title: 'Action',
             key: 'action',
-            render: () => (
-                <>
-                    <Button text="Change" width="100px" height="40px" />
-                    <Button text="Withdraw" width="100px" height="40px" />
-                </>
+            render: (record) => (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Button text="Change" color ="bg-lightblue" onClick={() => changeRequest(record)} width="100px" height="40px" />
+                    <Button text="Withdraw" color="bg-orange" onClick={() => withdrawRequest(record)} width="100px" height="40px" />
+                    <img 
+                       src={ExpandButton} 
+                       alt="Expand Button" 
+                       style={{ height:'30px', width: '30px', cursor: 'pointer'}} 
+                       onClick={()=>viewRequestDetails(record)}/>
+                </div>
             ),
         },
     ];
@@ -138,6 +158,27 @@ function Personal() {
                     </div>
                 </div>
             </div>
+                
+            {/* Modal */}
+            <Modal
+                title={`Details on Request #${selectedRecord?.id}`}
+                open={isModalVisible}
+                onCancel={handleCloseModal}
+                footer={[
+                    <Button text="Close" color="bg-gray" onClick={handleCloseModal} />,
+                    <Button text="Withdraw" color="bg-orange" onClick={() => withdrawRequest(selectedRecord)} />,
+                    <Button text="Change" color="bg-lightblue" onClick={() => changeRequest(selectedRecord)} />,
+                ]}
+            >
+                {selectedRecord && (
+                    <div>
+                        <p><strong>Date Range:</strong> {selectedRecord.dateRange}</p>
+                        <p><strong>WFH Type:</strong> {selectedRecord.WFHType}</p>
+                        <p><strong>Reason:</strong> {selectedRecord.reason}</p>
+                        <p><strong>Status:</strong> <Tag text={selectedRecord.status} color={selectedRecord.status === 'Approved' ? 'green' : selectedRecord.status === 'Pending' ? 'orange' : 'red'} /></p>
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 }
