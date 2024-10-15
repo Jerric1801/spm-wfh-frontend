@@ -172,8 +172,6 @@ function TeamRequest() {
       
       }
 
-       
-
     };
       
     const viewRequestDetails = (rowData) => {
