@@ -8,6 +8,7 @@ import NavBar from '../components/layout/NavBar'
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard';
 import Request from '../pages/Request';
+import Personal from '../pages/Personal';
 
 import { ScheduleProvider } from '../context/ScheduleContext';
 
@@ -38,6 +39,7 @@ const AppRoutes = () => {
                         <Route path="/" element={<Dashboard />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/request" element={<Request />} />
+                        <Route path="/personal" element={<Personal />} />
                     </Routes>
                 </ScheduleProvider>
             </div>

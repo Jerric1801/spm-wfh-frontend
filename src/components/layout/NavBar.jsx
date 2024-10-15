@@ -4,6 +4,8 @@ import DashboardIcon from "../../assets/images/nav/dashboard.png";
 import DashboardActiveIcon from "../../assets/images/nav/dashboard-active.png";
 import RequestIcon from "../../assets/images/nav/request.png";
 import RequestActiveIcon from "../../assets/images/nav/request-active.png";
+import PersonalIcon from "../../assets/images/nav/personal.png"
+import PersonalActiveIcon from "../../assets/images/nav/personal-active.png"
 
 function NavBar() {
   const location = useLocation();
@@ -24,6 +26,13 @@ function NavBar() {
         <img 
           src={location.pathname === '/request' ? RequestActiveIcon : RequestIcon} 
           alt="Request page icon" 
+          style={{ width: '40px', margin: 'auto', padding: '10px' }} 
+        />
+      </a>
+      <a href="/personal" className={location.pathname === '/personal' ? 'active-link' : ''}>
+        <img 
+          src={location.pathname === '/personal' ? PersonalActiveIcon : PersonalIcon} 
+          alt="Personal page icon" 
           style={{ width: '40px', margin: 'auto', padding: '10px' }} 
         />
       </a>
