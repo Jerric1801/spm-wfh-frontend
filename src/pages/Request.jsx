@@ -223,11 +223,13 @@ function TeamRequest() {
                 title={`Details on Request #${selectedRecord?.id}`}
                 open={isModalVisible}
                 onCancel={handleCloseModal}
-                footer={[
-                    <Button text="Close" width='150px' color="bg-gray" onClick={handleCloseModal} />,
-                    
-              <Button color="bg-green" width="150px" text="Approval" onClick={() => approveRequest(selectedRecord)}/>,
-              <Button color="bg-red" width="150px" text="Reject" onClick={() => rejectRequest(selectedRecord)}/>,
+                footer={[<div className='flex'>
+                      <Button text="Close" width='150px' color="bg-gray" onClick={handleCloseModal} />      
+                      <div className="w-[10px]"></div>
+                      <Button color="bg-green" width="150px" text="Approval" onClick={() => approveRequest(selectedRecord)}/>
+                      <div className="w-[10px]"></div>
+                      <Button color="bg-red" width="150px" text="Reject" onClick={() => rejectRequest(selectedRecord)}/>
+                  </div>
                 ]}
             >
                 {selectedRecord && (
