@@ -198,15 +198,15 @@ function TeamRequest() {
             <div className="col-span-12 row-span-11 bg-gray-100 flex justify-center items-center">
                 <div className="w-[80%] h-[100%]" style={{padding:'20px'}}>
                 <span className="text-[30px] font-bold">Team's Pending Request</span>
-                <br/>
+                <br/><br/>
                 <Table columns={columns} dataSource={dataSource} />
                 </div>
 
                 <div className="w-[20%] h-[100%]" style={{padding:'5px'}}>
                     <Calendar tileDisabled={({date}) => checkBlackoutDates(blackoutDates,date) }></Calendar>
-                    <div className="text-tag-grey-dark">
+                    <div className="text-tag-grey-dark" style={{margin:'20px'}}>
                         <br/>                    
-                        <span class='text-bold'>No WFH Days:</span>
+                        <span class='font-bold'>No WFH Days:</span>
                         {blackoutDates.map(blackoutDates => {
                           return (
                             <li>
