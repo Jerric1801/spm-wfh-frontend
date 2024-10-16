@@ -105,12 +105,12 @@ function TeamRequest() {
       ];
       
     const approveRequest = (rowData) => {
-        console.log('Approve:', rowData);
+        console.log('Action clicked for:', rowData);
     };
       
 
     const rejectRequest = (rowData) => {
-        console.log('Reject:', rowData);
+        console.log('Action clicked for:', rowData);
     };
       
     const viewRequestDetails = (rowData) => {
@@ -126,8 +126,7 @@ function TeamRequest() {
             <div className="col-span-12 row-span-11 bg-gray-100 flex justify-center items-center">
                 <div className="w-[80%] h-[100%]" style={{padding:'20px'}}>
                 <span className="text-[30px] font-bold">Team's Pending Request</span>
-                <br/><br/>
-                <Table columns={columns} dataSource={dataSource} className=""/>
+                <Table columns={columns} dataSource={dataSource} />
                 </div>
 
                 <div className="w-[20%] h-[100%]" style={{padding:'5px'}}>
