@@ -1,5 +1,5 @@
 //Dashboard Components
-import React, { useState } from 'react';  // Add this import
+import React, { useState } from 'react';
 import TopProfileBar from '../components/dashboard/TopProfileBar';
 import { Table, Modal } from 'antd';
 import Button from '../components/common/Button';
@@ -8,7 +8,9 @@ import ExpandButton from '../assets/images/expand.png';
 
 function Personal() {
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedRecord, setSelectedRecord] = useState(null);
+    const [selectedRecord, setSelectedRecord] = useState(null); 
+
+
 
     const dataSource = [
         {
@@ -61,7 +63,7 @@ function Personal() {
         },
     ];
 
-    const viewRequestDetails = (record) => {
+    const viewRequestDetails =(record) => {
         setSelectedRecord(record);
         setIsModalVisible(true);
     }
@@ -70,6 +72,13 @@ function Personal() {
         setIsModalVisible(false);
         setSelectedRecord(null);
     }
+
+    const handleWithdraw = (record) => {
+        setSelectedRecord(record);
+        setIsWithdrawModalVisible(true);  // Show the withdrawal modal
+    };
+
+    
 
     const columns = [
         {
@@ -159,14 +168,14 @@ function Personal() {
                 </div>
             </div>
                 
-            {/* Modal */}
-            <Modal
+                {/* Modal */}
+                <Modal
                 title={`Details on Request #${selectedRecord?.id}`}
-                open={isModalVisible}
+                open ={isModalVisible}
                 onCancel={handleCloseModal}
                 footer={[
                     <Button text="Close" color="bg-gray" onClick={handleCloseModal} />,
-                    <Button text="Withdraw" color="bg-orange" onClick={() => withdrawRequest(selectedRecord)} />,
+                    <Button text="Withdraw" color="bg-orange" onClick={() => handleWithdraw(selectedRecord)} />,
                     <Button text="Change" color="bg-lightblue" onClick={() => changeRequest(selectedRecord)} />,
                 ]}
             >
@@ -176,6 +185,7 @@ function Personal() {
                         <p><strong>WFH Type:</strong> {selectedRecord.WFHType}</p>
                         <p><strong>Reason:</strong> {selectedRecord.reason}</p>
                         <p><strong>Status:</strong> <Tag text={selectedRecord.status} color={selectedRecord.status === 'Approved' ? 'green' : selectedRecord.status === 'Pending' ? 'orange' : 'red'} /></p>
+                        {/* Add more fields here as necessary */}
                     </div>
                 )}
             </Modal>
@@ -184,3 +194,4 @@ function Personal() {
 }
 
 export default Personal;
+
