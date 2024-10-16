@@ -3,6 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
+.alert {
+  padding: 20px;
+  background-color: #f44336; /* Red */
+  color: white;
+  margin-bottom: 15px;
+}
 
 .full-viewport-container {
     width: 100vw;
