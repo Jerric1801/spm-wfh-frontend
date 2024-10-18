@@ -206,7 +206,7 @@ function TeamRequest() {
                     <Calendar tileDisabled={({date}) => checkBlackoutDates(blackoutDates,date) }></Calendar>
                     <div className="text-tag-grey-dark" style={{margin:'20px'}}>
                         <br/>                    
-                        <span class='font-bold'>No WFH Days:</span>
+                        <span className='font-bold'>No WFH Days:</span>
                         {blackoutDates.map(blackoutDates => {
                           return (
                             <li>
