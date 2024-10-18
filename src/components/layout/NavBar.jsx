@@ -33,7 +33,7 @@ function NavBar() {
         <img 
           src={location.pathname === '/personal' ? PersonalActiveIcon : PersonalIcon} 
           alt="Personal page icon" 
-          style={{ width: '40px', margin: 'auto', padding: '10px' }} 
+          style={{ width: '50px', margin: 'auto', padding: '10px' }} 
         />
       </a>
     </div>

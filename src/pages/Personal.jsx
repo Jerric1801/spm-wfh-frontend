@@ -1,10 +1,18 @@
 //Dashboard Components
+import React, { useState } from 'react';
 import TopProfileBar from '../components/dashboard/TopProfileBar';
-import { Table } from 'antd';
+import { Input, Table, Modal } from 'antd';
 import Button from '../components/common/Button';
-import Tag from '../components/common/Tag'; // Use your Tag component
+import Tag from '../components/common/Tag'; 
+import ExpandButton from '../assets/images/expand.png';
 
 function Personal() {
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedRecord, setSelectedRecord] = useState(null); 
+    const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
+    const [withdrawReason, setWithdrawReason] = useState(''); // State to store the withdrawal reason
+
+
     const dataSource = [
         {
             key: '1',
@@ -56,6 +64,32 @@ function Personal() {
         },
     ];
 
+    const viewRequestDetails =(record) => {
+        setSelectedRecord(record);
+        setIsModalVisible(true);
+    }
+
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+        setSelectedRecord(null);
+    }
+
+    const handleWithdraw = (record) => {
+        setSelectedRecord(record);
+        setIsWithdrawModalVisible(true);  // Show the withdrawal modal
+    };
+
+    const handleWithdrawRequest = () => {
+        // For now, we simply log the selected record and reason
+        console.log('Withdrawing request:', selectedRecord);
+        console.log('Reason:', withdrawReason);
+
+        // Close the modal after submission
+        setIsWithdrawModalVisible(false);
+        setSelectedRecord(null);
+    };
+    
+
     const columns = [
         {
             title: 'ID',
@@ -92,11 +126,16 @@ function Personal() {
         {
             title: 'Action',
             key: 'action',
-            render: () => (
-                <>
-                    <Button text="Change" width="100px" height="40px" />
-                    <Button text="Withdraw" width="100px" height="40px" />
-                </>
+            render: (record) => (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Button text="Change" color ="bg-lightblue" onClick={() => changeRequest(record)} width="100px" height="40px" />
+                    <Button text="Withdraw" color="bg-orange" onClick={() => handleWithdraw(record)} width="100px" height="40px" />
+                    <img 
+                       src={ExpandButton} 
+                       alt="Expand Button" 
+                       style={{ height:'30px', width: '30px', cursor: 'pointer'}} 
+                       onClick={()=>viewRequestDetails(record)}/>
+                </div>
             ),
         },
     ];
@@ -109,13 +148,13 @@ function Personal() {
             </div>
 
             {/* Main Content */}
-            <div className="col-span-9 row-span-11 bg-gray-100 p-8">
+            <div className="col-span-9 row-span-11 bg-gray-100 p-8 overflow-x-auto">
                 {/* Table */}
                 <Table dataSource={dataSource} columns={columns} pagination={false} />
             </div>
 
             {/* Short Summary on the right */}
-            <div className="col-span-3 row-span-11 bg-white p-8">
+            <div className="col-span-12 lg:col-span-3 row-span-11 bg-white p-8">
                 <h2 className="text-xl font-bold">Short Summary</h2>
                 <div className="mt-4">
                     <div className="flex justify-between items-center">
@@ -138,8 +177,48 @@ function Personal() {
                     </div>
                 </div>
             </div>
+                
+                {/* Modal */}
+                <Modal
+                title={`Details on Request #${selectedRecord?.id}`}
+                open ={isModalVisible}
+                onCancel={handleCloseModal}
+                footer={[
+                    <Button text="Close" color="bg-gray" onClick={handleCloseModal} />,
+                    <Button text="Withdraw" color="bg-orange" onClick={() => handleWithdraw(selectedRecord)} />,
+                    <Button text="Change" color="bg-lightblue" onClick={() => changeRequest(selectedRecord)} />,
+                ]}
+            >
+                {selectedRecord && (
+                    <div>
+                        <p><strong>Date Range:</strong> {selectedRecord.dateRange}</p>
+                        <p><strong>WFH Type:</strong> {selectedRecord.WFHType}</p>
+                        <p><strong>Reason:</strong> {selectedRecord.reason}</p>
+                        <p><strong>Status:</strong> <Tag text={selectedRecord.status} color={selectedRecord.status === 'Approved' ? 'green' : selectedRecord.status === 'Pending' ? 'orange' : 'red'} /></p>
+                        {/* Add more fields here as necessary */}
+                    </div>
+                )}
+            </Modal>
+            {/* Withdraw Modal */}
+            <Modal
+                title="Please enter your reason for withdrawal:"
+                open={isWithdrawModalVisible}
+                onCancel={() => setIsWithdrawModalVisible(false)}
+                footer={[
+                    <Button text="Cancel" color="bg-gray" onClick={() => setIsWithdrawModalVisible(false)} />,
+                    <Button text="Withdraw Request" color="bg-orange" onClick={handleWithdrawRequest} />,
+                ]}
+            >
+                <Input.TextArea
+                    rows={4}
+                    value={withdrawReason}
+                    onChange={(e) => setWithdrawReason(e.target.value)}
+                    placeholder="Enter your reason here..."
+                />
+            </Modal>
         </div>
     );
 }
 
 export default Personal;
+
