@@ -229,12 +229,23 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
                                 <span className="text-[20px] font-bold">Date Range</span> 
                                 <br/>
                                 <br/>
+                                <span className="text-[20px] font-bold">Days of the Week</span> 
+                                <br/>
+                                <br/>
                                 <br/>
                                 <span className="text-[20px] font-bold">WFH Type</span> 
                                 <br/>
                                 <br/>
                                 <br/>
                                 <span className="text-[20px] font-bold">Reason</span> 
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <span className="text-[20px] font-bold">Attach Files</span> 
                     
                             </div>
                         
@@ -247,6 +258,16 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
                                 onChange={setWFHRange}
                                     />
                                 }
+                                </div>
+                                <br/>
+                                <br/>
+
+                                <div>
+                                    <Button width='20%' text='M'/>
+                                    <Button width='20%' text='Tu'/>
+                                    <Button width='20%' text='W'/>
+                                    <Button width='20%' text='Th'/>
+                                    <Button width='20%' text='F'/>
                                 </div>
 
                                 <br/>
@@ -261,6 +282,9 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
                                 <br/>
                                 <textarea className="w-[250px] h-[150px] rounded-[10px]" style={{padding:'10px'}}  value={WFHReason} onChange={(e)=>setWFHReason(e.target.value)}></textarea>
 
+                                <br/>
+                                <br/>
+                                <Button text='Upload files'/>
 
                             </div>
                         </div>
