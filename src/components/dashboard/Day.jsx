@@ -6,20 +6,24 @@ import { ScheduleContext } from '../../context/ScheduleContext';
 function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
     const isToday = day.isToday;
 
-    const { scheduleData, fetchParams } = useContext(ScheduleContext);
-    const [memberCount, setMemberCount] = useState({ AM: 0, PM: 0, WD: 0, IN: 0 });
+    const { fetchParams } = useContext(ScheduleContext);
+    const [memberCount, setMemberCount] = useState({ IN: 0, WFH: 0 });
 
+    const isWithinRange = selectedDateRange &&
+        day.date >= selectedDateRange.start &&
+        day.date <= selectedDateRange.end;
 
     useEffect(() => {
-        const matchingData = scheduleData.find(item => isSameDay(new Date(item.date), day.date));
+        const matchingData = fetchParams.filteredData.find(item => isSameDay(new Date(item.date), day.date));
 
-        if (matchingData) {
+        if (matchingData) { 
             let amCount = 0;
             let pmCount = 0;
             let wdCount = 0;
             let inCount = 0;
 
-            if (fetchParams.department && fetchParams.team) {
+
+            if (fetchParams.department && fetchParams.team) { 
                 const members = matchingData.departments
                     .find(d => d.department === fetchParams.department)?.teams
                     .find(t => t.team === fetchParams.team)?.members;
@@ -63,58 +67,55 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
                 });
             }
 
-            setMemberCount({ AM: amCount, PM: pmCount, WD: wdCount, IN: inCount });
+            setMemberCount({ IN: inCount, WFH: amCount + pmCount + wdCount });
         } else {
-            setMemberCount({ AM: 0, PM: 0, WD: 0, IN: 0 });
+            setMemberCount({ IN: 0, WFH: 0 });
         }
-    }, [day.date, scheduleData, fetchParams]);
+    }, [day.date, fetchParams]);
 
 
-    const isWithinRange = selectedDateRange &&
-        day.date >= selectedDateRange.start &&
-        day.date <= selectedDateRange.end;
+    // const tagData = [
+    //     { text: "WFH Confirmed", color: "green" },
+    //     { text: "WFH Pending", color: "orange" },
+    //     { text: "WFH Rejected", color: "red" },
+    //     { text: "Public Holiday", color: "grey" },
+    // ];
 
-    const [isSelected, setIsSelected] = useState(false);
-
-    const tagData = [
-        { text: "WFH Confirmed", color: "green" },
-        { text: "WFH Pending", color: "orange" },
-        { text: "WFH Rejected", color: "red" },
-        { text: "Public Holiday", color: "grey" },
-    ];
-
-    const filteredTags = tags ? tagData.filter(tag => tags.includes(tag.text)) : [];
+    // const filteredTags = tags ? tagData.filter(tag => tags.includes(tag.text)) : [];
 
     const handleClick = () => {
         onSelect(day.date);
     };
 
-    let wfhPercentageColor = 'red';
-    if (day.wfhPercentage?.in >= 60) {
-        wfhPercentageColor = 'green';
-    } else if (day.wfhPercentage?.in >= 30) {
-        wfhPercentageColor = 'orange';
-    }
+    // let wfhPercentageColor = 'red';
+    // if (day.wfhPercentage?.in >= 60) {
+    //     wfhPercentageColor = 'green';
+    // } else if (day.wfhPercentage?.in >= 30) {
+    //     wfhPercentageColor = 'orange';
+    // }
 
     return (
         <div
             className={`p-2 border border-gray-200 text-left relative 
-                  ${isSelected ? 'bg-light-green' : ''} 
                   ${isWithinRange ? 'bg-light-green' : ''}`}
             onClick={handleClick}
             onMouseOver={onMouseOver}>
             <div className={`w-7 flex justify-center align-center rounded-[99px] ${isToday ? 'bg-green' : ''}  ${isToday ? 'text-white' : 'text-gray-500'}`}>{day.number}</div>
             <div className="absolute bottom-2 left-2">
-                {filteredTags.map((tag, index) => (
+                {/* {filteredTags.map((tag, index) => (
                     <Tag key={index} text={tag.text} color={tag.color} />
-                ))}
+                ))} */}
             </div>
             <div className="absolute top-2 right-2 grid grid-cols-2 gap-1">
 
                 {Object.entries(memberCount).map(([type, count]) => (
-               
-                        <Tag key={type} text={`${type}: ${count}`} color="blue" reverse={true} />
-                    
+
+                    <Tag
+                        key={type}
+                        text={`${count}`}
+                        color={type === 'IN' ? 'green' : 'orange'} // Conditional color 
+                        reverse={true}
+                    />
                 ))}
             </div>
         </div>

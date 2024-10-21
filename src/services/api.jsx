@@ -18,10 +18,15 @@ class API {
           const token = localStorage.getItem('token');
           if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+          } else {
+            console.log("Token not found in localStorage."); // Check if token is missing
           }
           return config;
         },
-        (error) => Promise.reject(error)
+        (error) => {
+          console.error("Interceptor error:", error); 
+          Promise.reject(error)
+        }
       );
 
       // Intercept responses to handle token validation
@@ -49,4 +54,5 @@ class API {
 }
 
 const api = new API().getInstance();
+console.log(api)
 export default api;

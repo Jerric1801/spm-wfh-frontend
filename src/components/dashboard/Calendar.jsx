@@ -4,17 +4,17 @@ import Day from './Day'
 import { ScheduleContext } from '../../context/ScheduleContext';
 
 function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDragging, currentMonth }) {
-    const { scheduleData } = useContext(ScheduleContext);
-
+    const { fetchParams } = useContext(ScheduleContext);
     const start = startOfMonth(currentMonth);
-    const end = endOfMonth(currentMonth);
+    const end = endOfMonth(currentMonth); 
     const daysInMonth = eachDayOfInterval({ start, end });
+    const [dragStarted, setDragStarted] = useState(false);
+    const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 });
 
     const days = daysInMonth.map((date) => {
-        const matchingData = scheduleData.find(item => isSameDay(new Date(item.date), date));
-        // Extract the tags from the matchingData if it exists, otherwise set to an empty array
-        const tags = matchingData?.departments.flatMap(department => 
-            department.teams.flatMap(team => 
+        const matchingData = fetchParams.filteredData.find(item => isSameDay(new Date(item.date), date));
+        const tags = matchingData?.departments.flatMap(department =>
+            department.teams.flatMap(team =>
                 team.members.map(member => member.WFH_Type)
             )
         ) || [];
@@ -23,13 +23,13 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
             date,
             number: format(date, 'd'),
             isToday: isSameDay(date, new Date()),
-            tags: tags, 
+            tags: tags,
         };
     });
 
 
     const firstDayOfMonth = startOfMonth(currentMonth);
-    const firstDayOfCalendarGrid = startOfWeek(firstDayOfMonth); // Get the first day of the week the month starts in
+    const firstDayOfCalendarGrid = startOfWeek(firstDayOfMonth);
 
     // Calculate the number of blank days at the start
     const blankDays = eachDayOfInterval({
@@ -59,11 +59,15 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
             setSelectedDateRange({ start: selectedDate, end: selectedDate });
         }
     }
+    function handleMouseOver(day) {
+
+    }
 
     // Handles the mouse down event on the calendar. It initiates the dragging 
     // date based on the mouse position
     function handleMouseDown(event) {
         setIsDragging(true);
+        setDragStarted(false); // Reset dragStarted
 
         const calendarGrid = event.currentTarget;
         const rect = calendarGrid.getBoundingClientRect();
@@ -71,12 +75,15 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
         const y = event.clientY - rect.top;
 
         const col = Math.floor(x / (rect.width / 7));
-        const row = Math.floor((y - (blankDays.length / 7) * (rect.height / (allDays.length / 7))) / 
-                               (rect.height / (allDays.length / 7)));
-    
+        const row = Math.floor((y - (blankDays.length / 7) * (rect.height / (allDays.length / 7))) /
+            (rect.height / (allDays.length / 7)));
+
         const clickedDateIndex = row * 7 + col;
         const clickedDate = allDays[clickedDateIndex]?.date;
-    
+
+        // Store initial mouse position
+        setInitialMousePosition({ x: event.clientX, y: event.clientY });
+
         if (selectedDateRange &&
             clickedDate >= selectedDateRange.start &&
             clickedDate <= selectedDateRange.end) {
@@ -85,7 +92,7 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
             return;
         }
 
-        setSelectedDateRange({ start: clickedDate, end: null });
+        setSelectedDateRange({ start: clickedDate, end: clickedDate });
     }
 
     // Handles the mouse up event, typically marking the end of a drag 
@@ -93,41 +100,72 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
     function handleMouseUp(event) {
         setIsDragging(false);
 
-        if (!selectedDateRange?.start) return;
-        const calendarGrid = document.getElementById('calendarGrid');
-        let targetElement = event.target;
-        while (targetElement && targetElement !== calendarGrid) {
-            targetElement = targetElement.parentNode;
-        }
-        if (!targetElement) {
-            setSelectedDateRange(null);
-            return;
-        }
-        const rect = calendarGrid.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+        if (dragStarted) { // Only update if a drag occurred
+            const calendarGrid = document.getElementById('calendarGrid');
+            let targetElement = event.target;
+            while (targetElement && targetElement !== calendarGrid) {
+                targetElement = targetElement.parentNode;
+            }
+            if (!targetElement) {
+                setSelectedDateRange(null);
+                return;
+            }
+            const rect = calendarGrid.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
 
-        const col = Math.floor(x / (rect.width / 7));
-        const row = Math.floor((y - (blankDays.length / 7) * (rect.height / (allDays.length / 7))) / 
-                               (rect.height / (allDays.length / 7)));
-    
-        const endDateIndex = row * 7 + col;
-        const endDate = allDays[endDateIndex]?.date;
+            const col = Math.floor(x / (rect.width / 7));
+            const row = Math.floor((y - (blankDays.length / 7) * (rect.height / (allDays.length / 7))) /
+                (rect.height / (allDays.length / 7)));
 
-        setSelectedDateRange({
-            start: selectedDateRange.start,
-            end: endDate || selectedDateRange.start
-        });
+            const endDateIndex = row * 7 + col;
+            const endDate = allDays[endDateIndex]?.date;
+
+            setSelectedDateRange({
+                start: selectedDateRange.start,
+                end: endDate
+            });
+        }
     }
 
     // Handles the mouse over event on calendar days. 
-    function handleMouseOver(date) {
-        if (isDragging && selectedDateRange?.start) {
-            setSelectedDateRange({ ...selectedDateRange, end: date });
+    function handleMouseMove(event) {
+        if (!isDragging) return;
+
+        const dragThreshold = 5; // Adjust as needed
+        const { x, y } = initialMousePosition;
+        const distance = Math.sqrt(
+            Math.pow(event.clientX - x, 2) + Math.pow(event.clientY - y, 2)
+        );
+
+        if (distance > dragThreshold) {
+            setDragStarted(true);
         }
+
+        if (dragStarted && selectedDateRange?.start) {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const rect = calendarGrid.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const col = Math.floor(x / (rect.width / 7));
+            const row = Math.floor((y - (blankDays.length / 7) * (rect.height / (allDays.length / 7))) /
+                (rect.height / (allDays.length / 7)));
+
+            const endDateIndex = row * 7 + col;
+            const endDate = allDays[endDateIndex]?.date;
+
+            setSelectedDateRange({ ...selectedDateRange, end: endDate });
+        }
+
     }
     return (
-        <div id="calendarGrid" className="w-[100%] h-[100%] p-1 rounded-lg flex flex-col flex-grow overflow-auto select-none" onMouseDown={handleMouseDown}
+        <div
+            id="calendarGrid"
+            className="w-[100%] h-[100%] p-1 rounded-lg flex flex-col flex-grow overflow-auto select-none"
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove} // Add mousemove listener
         >
             <div className="grid grid-cols-7">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
@@ -140,13 +178,14 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
                     day.isBlank ? (
                         <div key={day.date} className="p-2 border border-gray-200"></div>
                     ) : (
-                        <Day key={day.date}
+                        <Day
+                            key={day.date}
                             day={day}
                             tags={day.tags}
                             onSelect={handleDaySelect}
                             selectedDateRange={selectedDateRange}
                             onMouseOver={() => handleMouseOver(day.date)}
-                        ></Day>
+                        />
                     )
                 ))}
             </div>
@@ -154,4 +193,4 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
     )
 }
 
-export default Calendar
+export default Calendar;
