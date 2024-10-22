@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import SettingsIcon from "../../assets/images/settings_icon.png";
+import NotificationSystem from '../../components/common/NotificationSystem.jsx'
 
 const flagDictionary = {
     'Singapore': '🇸🇬',
@@ -8,6 +9,8 @@ const flagDictionary = {
     'Indonesia ': '🇮🇩',
     'Malaysia': '🇲🇾'
 };
+
+
 
 function TopProfileBar() {
     const [staffName, setStaffName] = useState('');
@@ -48,7 +51,14 @@ function TopProfileBar() {
                         {flagDictionary[country] || ''}
                     </span>
                 )}
-                <img src={SettingsIcon} alt="Settings icon" className="mr-3 w-6" /> 
+
+                <div className="hover:bg-green p-2 rounded-full transition-colors">
+                 <NotificationSystem/>
+                </div>
+
+                <button className="hover:bg-gray-100 p-2 rounded-full transition-colors">
+                 <img src={SettingsIcon} alt="Settings icon" className="mr-3 w-6" /> 
+                </button>
                 <div className="bg-gray-300 text-gray-800 rounded-full w-10 h-10 flex items-center justify-center font-bold mr-3"> 
                     {getInitials(staffName)}
                 </div>
