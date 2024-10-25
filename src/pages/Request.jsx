@@ -64,8 +64,8 @@ function TeamRequest() {
   const columns = [
     {
       title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'key',
+      key: 'key',
       width: '8%',
 
     },
@@ -111,7 +111,7 @@ function TeamRequest() {
 
   const approveRequest = async (rowData) => {
     if (confirm(`Confirm approving request? 
-        Request ID: ${rowData.id}
+        Request ID: ${rowData.key}
         Team member: ${rowData.member} 
         Date Range: ${rowData.dateRange} 
         WFH Type: ${rowData.wfhType}
@@ -119,7 +119,7 @@ function TeamRequest() {
   
       try {
         const payload = {
-          requestId: rowData.id, // Assuming 'id' holds the Request_ID
+          requestId: rowData.key, // Assuming 'id' holds the Request_ID
           action: 'approve',
           managerReason: null, // No reason needed for approval
         };
@@ -129,7 +129,7 @@ function TeamRequest() {
         alert('This request has been successfully approved!');
 
         setDataSource(prevDataSource => 
-          prevDataSource.filter(record => record.id !== rowData.id)
+          prevDataSource.filter(record => record.key !== rowData.key)
         );
   
       } catch (error) {
@@ -143,7 +143,7 @@ function TeamRequest() {
     let rejReason = '';
     while (rejReason == '') {
       rejReason = prompt(`Please enter your reason for rejection. 
-        Request ID: ${rowData.id}
+        Request ID: ${rowData.key}
         Team member: ${rowData.member} 
         Date Range: ${rowData.dateRange} 
         WFH Type: ${rowData.wfhType}
@@ -153,7 +153,7 @@ function TeamRequest() {
     if (rejReason != null) {
       try {
         const payload = {
-          requestId: rowData.id,
+          requestId: rowData.key,
           action: 'reject',
           managerReason: rejReason,
         };
@@ -163,7 +163,7 @@ function TeamRequest() {
         alert('This request has been successfully rejected!');
 
         setDataSource(prevDataSource => 
-          prevDataSource.filter(record => record.id !== rowData.id)
+          prevDataSource.filter(record => record.key !== rowData.key)
         );
   
       } catch (error) {
@@ -204,7 +204,7 @@ function TeamRequest() {
 
       {/* Modal */}
       <Modal
-        title={`Details on Request #${selectedRecord?.id}`}
+        title={`Details on Request #${selectedRecord?.key}`}
         open={isModalVisible}
         onCancel={handleCloseModal}
         footer={[<div className='flex'>
@@ -218,7 +218,7 @@ function TeamRequest() {
       >
         {selectedRecord && (
           <div>
-            <p><strong>Request ID:</strong> {selectedRecord.id}</p>
+            <p><strong>Request ID:</strong> {selectedRecord.key}</p>
             <p><strong>Member:</strong> {selectedRecord.member}</p>
             <p><strong>Date Range:</strong> {selectedRecord.dateRange}</p>
             <p><strong>WFH Type:</strong> {selectedRecord.wfhType}</p>
