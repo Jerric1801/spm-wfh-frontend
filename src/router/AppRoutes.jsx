@@ -2,10 +2,10 @@ import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 //components
-import NavBar from '../components/layout/NavBar'
+import NavBar from '../components/layout/NavBar';
 
 //pages
-import Login from '../pages/Login'
+import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import Request from '../pages/Request';
 import Personal from '../pages/Personal';

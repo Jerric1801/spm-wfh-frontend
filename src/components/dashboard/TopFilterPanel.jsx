@@ -6,13 +6,23 @@ import calendarData from '../../data/dashboard/calendar.json'
 import { ScheduleContext } from '../../context/ScheduleContext';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import WeekdayButton from '../applyWFH/WeekdayButton';
 
 function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Date(), endDate = new Date() }) {
     const { setCurrentMonth, fetchParams } = useContext(ScheduleContext);
     const [showModal, setShowModal] = useState(false);
     const [showCalen, setShowCalen] = useState(false);
     const [modalDateRange, setModalDateRange] = useState(`${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`);
-
+    const [recurringDays,setrecurringDays] = useState({
+        'M':false,
+        'Tu':false,
+        'W':false,
+        'Th':false,
+        'F':false,
+        'Sa':false,
+        'Su':false,
+    })
+    
     const [WFHRange, setWFHRange] = useState([new Date(), new Date()]);
     const [WFHType, setWFHType] = useState('');
     const [WFHReason, setWFHReason] = useState('');
@@ -34,7 +44,7 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
         console.log('isSameDay');
         console.log(isSameDay(WFHRange[0],today));
         */
-        if (isSameDay(WFHRange[0], today)) {
+        if (isSameDay(WFHRange[0], today)) { // handle AM apply PM WFH special case
             // check if now is AM
             const todayNoon = setMinutes(setHours(new Date(), 12), 0);
             if (!(isBefore(today, todayNoon) && WFHType == 'Afternoon only (PM)')) {
@@ -46,11 +56,23 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
 
         }
         else if (isBefore(WFHRange[0], today)) { //if before today 
-            // TODO handle AM book for PM clause
             alert('Please ensure the date range starts AFTER today');
             error += 1;
         }
         //}
+
+
+        let numDays = 0;
+        console.log(recurringDays);
+        for (var day in recurringDays){
+            numDays += recurringDays[day] ? 1:0;
+        }
+        //console.log(numDays);
+        if (numDays ==0){
+            alert('Please select at least one day in a week.');
+            error +=1;
+        }
+
 
         if (WFHType == '') {
             alert('Please select WFH type!');
@@ -273,7 +295,10 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
                                     <span className="text-[20px] font-bold">Date Range</span>
                                     <br />
                                     <br />
-                                    <br />
+                                    <span className="text-[20px] font-bold">Days of the Week</span> 
+                                    <br/>
+                                    <br/>
+                                    <br/>
                                     <span className="text-[20px] font-bold">WFH Type</span>
                                     <br />
                                     <br />
@@ -283,7 +308,7 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
                                 </div>
 
                                 <div className="flex flex-col w-[60%]">
-                                    <Button color="bg-green" onClick={(e) => handleCalenButton(e)} text={modalDateRange}></Button>
+                                    <Button color="" onClick={(e) => handleCalenButton(e)} text={modalDateRange}></Button>
 
                                     <div className="col-span-9 row-span-9 shadow-md">
                                         {showCalen && <Calendar style={{ zIndex: '100001', position: 'absolute', top: '100%', left: '0' }}
@@ -291,6 +316,18 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
                                             onChange={setWFHRange}
                                         />
                                         }
+                                    </div>
+                                    <br/>
+                                    <br/>
+
+                                    <div>
+                                        <WeekdayButton weekday='M' setrecurringDays={setrecurringDays}/>
+                                        <WeekdayButton weekday='Tu' setrecurringDays={setrecurringDays}/>
+                                        <WeekdayButton weekday='W' setrecurringDays={setrecurringDays}/>
+                                        <WeekdayButton weekday='Th' setrecurringDays={setrecurringDays}/>
+                                        <WeekdayButton weekday='F' setrecurringDays={setrecurringDays}/>
+                                        <WeekdayButton weekday='Sa' setrecurringDays={setrecurringDays}/>
+                                        <WeekdayButton weekday='Su' setrecurringDays={setrecurringDays}/>
                                     </div>
 
                                     <br />
