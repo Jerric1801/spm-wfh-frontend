@@ -6,15 +6,27 @@ import calendarData from '../../data/dashboard/calendar.json'
 import { ScheduleContext } from '../../context/ScheduleContext';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import WeekdayButton from '../applyWFH/WeekdayButton';
+
 
 function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Date() }) {
     const { setCurrentMonth } = useContext(ScheduleContext);
     const [showModal, setShowModal] = useState(false);
     const [showCalen, setShowCalen] = useState(false);
     const [modalDateRange, setModalDateRange] = useState(`${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`);
+    const [recurringDays,setrecurringDays] = useState({
+        'M':false,
+        'Tu':false,
+        'W':false,
+        'Th':false,
+        'F':false,
+        'Sa':false,
+        'Su':false,
+    })
     
+
     const [WFHRange,setWFHRange] = useState([new Date(),new Date()]);
-    console.log(WFHRange);
+    //console.log(WFHRange);
     const [WFHType,setWFHType] = useState('');
     const [WFHReason,setWFHReason] = useState('');
 
@@ -55,6 +67,25 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
         }
         //}
 
+
+        let numDays = 0;
+        console.log(recurringDays);
+        for (var day in recurringDays){
+            numDays += recurringDays[day] ? 1:0;
+        }
+        console.log(numDays);
+        if (numDays ==0){
+            alert('Please select at least one day in a week.');
+        }
+        /*
+        const numDaysSelected = recurringDays.reduce((daysSelected,day)=>daysSelected+day)
+        console.log(
+            Object.entries(recurringDays)
+            .map( ([key, value]) => `My key is ${key} and my value is ${value}` )
+          )
+            */
+
+
         if (WFHType==''){
             alert('Please select WFH type!');
             error +=1;
@@ -83,6 +114,7 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
 
         }
     };
+
 
     useEffect(() => {
         console.log('Update range', WFHRange);
@@ -238,7 +270,7 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
                                 <br/>
                                 <br/>
                                 <span className="text-[20px] font-bold">Reason</span> 
-                                <br/>
+                                <br/>    
                                 <br/>
                                 <br/>
                                 <br/>
@@ -263,11 +295,13 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
                                 <br/>
 
                                 <div>
-                                    <Button width='20%' text='M'/>
-                                    <Button width='20%' text='Tu'/>
-                                    <Button width='20%' text='W'/>
-                                    <Button width='20%' text='Th'/>
-                                    <Button width='20%' text='F'/>
+                                    <WeekdayButton weekday='M' setrecurringDays={setrecurringDays}/>
+                                    <WeekdayButton weekday='Tu' setrecurringDays={setrecurringDays}/>
+                                    <WeekdayButton weekday='W' setrecurringDays={setrecurringDays}/>
+                                    <WeekdayButton weekday='Th' setrecurringDays={setrecurringDays}/>
+                                    <WeekdayButton weekday='F' setrecurringDays={setrecurringDays}/>
+                                    <WeekdayButton weekday='Sa' setrecurringDays={setrecurringDays}/>
+                                    <WeekdayButton weekday='Su' setrecurringDays={setrecurringDays}/>
                                 </div>
 
                                 <br/>
@@ -284,7 +318,7 @@ function TopFilterPanel({ currentMonth, startDate = new Date(), endDate = new Da
 
                                 <br/>
                                 <br/>
-                                <Button text='Upload files'/>
+                                <input type='file'></input>
 
                             </div>
                         </div>
