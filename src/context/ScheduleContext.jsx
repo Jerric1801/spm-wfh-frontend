@@ -1,11 +1,13 @@
 import { createContext, useState, useEffect, useMemo } from 'react';
 import { getSchedule } from '../services/endpoints/schedule';
+import { getStaffSchedule } from '../services/endpoints/manageRequests'
 import { startOfMonth, endOfMonth, addMonths } from 'date-fns'; 
 
 const ScheduleContext = createContext();
 
 const ScheduleProvider = ({ children }) => {
     const [scheduleData, setScheduleData] = useState([]);
+    const [staffRequests, setStaffRequests] = useState([]); 
     const [currentMonth, setCurrentMonth] = useState(new Date()); 
     const [fetchParams, setFetchParams] = useState({ 
         filteredData: scheduleData,
@@ -16,7 +18,7 @@ const ScheduleProvider = ({ children }) => {
 
     useEffect(() => {
         const fetchSchedule = async () => {
-            console.log('💻 API: getSchedule called')
+            console.log('💻 API 1: getSchedule called')
             if (lastFetchedMonth && 
                 currentMonth.getMonth() === lastFetchedMonth.getMonth() &&
                 currentMonth.getFullYear() === lastFetchedMonth.getFullYear()) {
@@ -49,16 +51,28 @@ const ScheduleProvider = ({ children }) => {
             }
         };
 
+        const fetchStaffRequests = async () => { 
+            console.log('💻 API 2: getStaff called')
+            try {
+                const data = await getStaffSchedule();
+                setStaffRequests(data);
+            } catch (error) {
+                console.error("Error fetching staff requests:", error);
+            }
+        }
+
         fetchSchedule();
+        fetchStaffRequests();
     }, [currentMonth, lastFetchedMonth]);
 
     const contextValue = useMemo(() => ({
         scheduleData,
+        staffRequests,
         currentMonth, 
         setCurrentMonth,
         setFetchParams,
         fetchParams   
-    }), [scheduleData, currentMonth, setFetchParams, fetchParams]); 
+    }), [scheduleData, staffRequests, currentMonth, setFetchParams, fetchParams]); 
 
     return (
         <ScheduleContext.Provider value={contextValue}>
