@@ -64,7 +64,7 @@ const NotificationSystem = () => {
 
     getNotifications();
 
-    // Poll for new notifications every minute
+    // Poll for new notifications every minute -> cron job
     const interval = setInterval(getNotifications, 60000);
     return () => clearInterval(interval);
   }, [lastChecked]);

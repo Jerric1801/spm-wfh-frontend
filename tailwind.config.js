@@ -16,6 +16,15 @@ module.exports = {
         beige: '#FAE7D5',
         orange: '#FF9F2D',
         red: '#E92C2C',
+
+        //background:
+        'bg-black': '#2B2F2D',
+        'bg-white': '#F6F6F6',
+        'bg-green': '#2EA06B',
+        'bg-beige': '#FAE7D5',
+        'bg-orange': '#FF9F2D',
+        'bg-red': '#E92C2C',
+
         'light-red': '#ffd6d1',
         //accent
         'light-green' : '#E5F8EB',
