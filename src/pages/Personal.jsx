@@ -1,92 +1,18 @@
 //Dashboard Components
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TopProfileBar from '../components/dashboard/TopProfileBar';
 import { Input, Table, Modal } from 'antd';
 import Button from '../components/common/Button';
 import Tag from '../components/common/Tag'; 
 import ExpandButton from '../assets/images/expand.png';
+import { fetchRequests } from '../services/endpoints/manageRequests'
 
 function Personal() {
+    const [dataSource, setDataSource] = useState([]); // Ensure it's initialized
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedRecord, setSelectedRecord] = useState(null); 
     const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
     const [withdrawReason, setWithdrawReason] = useState(''); // State to store the withdrawal reason
-
-    useEffect(() => {
-        const fetchRequests = async () => {
-            try {
-                const response = await fetch(`/api/requests?StaffId==${StaffId}`); 
-                const data = await response.json();
-                
-                
-                const formattedData = data.map((request, index) => ({
-                    key: index.toString(),
-                    id: request.Request_ID,
-                    dateRange: `${request.Start_Date} - ${request.End_Date}`,
-                    WFHType: request.WFH_Type,
-                    status: request.Current_Status,
-                    reason: request.Request_Reason,
-                }));
-
-                setDataSource(formattedData);
-            } catch (error) {
-                console.error('Error fetching requests:', error);
-            }
-        };
-
-        fetchRequests();
-    }, []);
-
-    // const [dataSource, setDataSource] = useState([
-    //     {
-    //         key: '1',
-    //         id: '48899',
-    //         dateRange: '28 Oct - 29 Oct',
-    //         WFHType: 'AM',
-    //         status: 'Pending',
-    //         reason: 'Deepavali Prep',
-    //     },
-    //     {
-    //         key: '2',
-    //         id: '56777',
-    //         dateRange: '3 Oct - 5 Oct',
-    //         WFHType: 'FD',
-    //         status: 'Pending',
-    //         reason: 'Birthday',
-    //     },
-    //     {
-    //         key: '3',
-    //         id: '66004',
-    //         dateRange: '20 Sep - 22 Sep',
-    //         WFHType: 'AM',
-    //         status: 'Withdrawn',
-    //         reason: 'Babysitting',
-    //     },
-    //     {
-    //         key: '4',
-    //         id: '35804',
-    //         dateRange: '16 Sep - 17 Sep',
-    //         WFHType: 'FD',
-    //         status: 'Approved',
-    //         reason: 'Child Care',
-    //     },
-    //     {
-    //         key: '5',
-    //         id: '54904',
-    //         dateRange: '9 Sep - 13 Sep',
-    //         WFHType: 'PM',
-    //         status: 'Rejected',
-    //         reason: 'Babysitting',
-    //     },
-    //     {
-    //         key: '6',
-    //         id: '31234',
-    //         dateRange: '20 Aug - 25 Aug',
-    //         WFHType: 'FD',
-    //         status: 'Approved',
-    //         reason: 'Dogsitting',
-    //     },
-    // ]);
 
     const viewRequestDetails =(record) => {
         setSelectedRecord(record);

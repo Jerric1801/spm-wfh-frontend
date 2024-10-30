@@ -3,6 +3,19 @@ import { Bell, Check, X } from 'lucide-react';
 import { cn } from '../../utils/tailwindUtils';
 
 // This can be replaced with API call later
+// const fetchNotifications = async () => {
+//   try {
+//     const response = await fetch('/api/notifications', {
+//       headers: { Authorization: `Bearer ${yourJWTToken}` },
+//     });
+//     if (!response.ok) throw new Error("Failed to fetch notifications");
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error("Error fetching notifications:", error);
+//     return [];
+//   }
+// };
 const fetchNotifications = () => {
   return Promise.resolve([
     {
