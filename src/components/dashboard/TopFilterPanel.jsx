@@ -134,7 +134,7 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
     useEffect(() => {
         setModalDateRange(`${WFHRange[0].toLocaleDateString()} to ${WFHRange[1].toLocaleDateString()}`);
         if(differenceInDays(WFHRange[0],WFHRange[1])<7){
-            //console.log('disabling some day buttons...');
+            console.log('disabling some day buttons...');
             // check which days to disable
             let disableVar = {
                 'M': true,
@@ -434,7 +434,17 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
                                     <br/>
 
                                     <div>
-                                        {Object.entries(recurringDays).map(([day,temp]) => (<WeekdayButton weekday={day} setrecurringDays={setrecurringDays} disabled={buttonDisabled[{day}]}/>))}
+                                        {
+                                        // refactoring attempt
+                                        //Object.entries(recurringDays).map(([day,temp]) => (<WeekdayButton weekday={day} setrecurringDays={setrecurringDays} disabled={buttonDisabled[{day}]}/>))
+                                        }
+                                        <WeekdayButton weekday={'M'} setrecurringDays={setrecurringDays} disabled={buttonDisabled['M']}/>
+                                        <WeekdayButton weekday={'Tu'} setrecurringDays={setrecurringDays} disabled={buttonDisabled['Tu']}/>
+                                        <WeekdayButton weekday={'W'} setrecurringDays={setrecurringDays} disabled={buttonDisabled['W']}/>
+                                        <WeekdayButton weekday={'Th'} setrecurringDays={setrecurringDays} disabled={buttonDisabled['Th']}/>
+                                        <WeekdayButton weekday={'F'} setrecurringDays={setrecurringDays} disabled={buttonDisabled['F']}/>
+                                        <WeekdayButton weekday={'Sa'} setrecurringDays={setrecurringDays} disabled={buttonDisabled['Sa']}/>
+                                        <WeekdayButton weekday={'Su'} setrecurringDays={setrecurringDays} disabled={buttonDisabled['Su']}/>
                                         
                                     </div>
 
