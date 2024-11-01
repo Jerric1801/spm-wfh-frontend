@@ -1,8 +1,11 @@
 import api from '../api';
 
-const getSchedule = async (payload) => {
+const getSchedule = async (params) => {
     try {
-        const response = await api.post(`/view-schedule/schedule`, payload);
+        const response = await api.get('/view-schedule/', {
+            params, // Attach query parameters here
+        });
+        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error("Error fetching schedule:", error);
