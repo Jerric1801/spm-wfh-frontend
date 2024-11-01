@@ -14,6 +14,15 @@ function Personal() {
     const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
     const [withdrawReason, setWithdrawReason] = useState(''); // State to store the withdrawal reason
 
+    useEffect(() => {
+        const loadRequests = async () => {
+            const data = await fetchRequests();
+            setDataSource(data);
+        };
+
+        loadRequests();
+    }, []);
+
     const viewRequestDetails =(record) => {
         setSelectedRecord(record);
         setIsModalVisible(true);
