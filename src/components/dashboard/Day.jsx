@@ -80,9 +80,6 @@ function Day({ day, tags, requests, onSelect, selectedDateRange, onMouseOver }) 
         onSelect(day.date);
     };
 
-    console.log(requests)
-
-
     return (
         <div
             className={`p-2 border border-gray-200 text-left relative 

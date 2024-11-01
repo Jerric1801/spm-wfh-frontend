@@ -5,7 +5,6 @@ const getSchedule = async (params) => {
         const response = await api.get('/view-schedule/', {
             params, // Attach query parameters here
         });
-        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error("Error fetching schedule:", error);
