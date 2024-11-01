@@ -7,6 +7,7 @@ import { ScheduleContext } from '../../context/ScheduleContext';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import WeekdayButton from '../applyWFH/WeekdayButton';
+import FileUploadMultiple from '../applyWFH/UploadFiles';
 
 function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Date(), endDate = new Date() }) {
     const { setCurrentMonth, fetchParams } = useContext(ScheduleContext);
@@ -304,6 +305,14 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
                                     <br />
                                     <br />
                                     <span className="text-[20px] font-bold">Reason</span>
+                                    <br/>    
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <span className="text-[20px] font-bold">Attach Files</span> 
 
                                 </div>
 
@@ -342,6 +351,9 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
                                     <br />
                                     <textarea className="w-[250px] h-[150px] rounded-[10px]" style={{ padding: '10px' }} value={WFHReason} onChange={(e) => setWFHReason(e.target.value)}></textarea>
 
+                                    <br/>
+                                    <br/>
+                                    <input type='file' multiple></input>
 
                                 </div>
                             </div>

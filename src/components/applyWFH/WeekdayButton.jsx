@@ -1,7 +1,9 @@
 import { useState } from 'react';
 
 function WeekdayButton({weekday, width = "14%", height = "50px",setrecurringDays}){ //
-    const [btnColor, setBtnColor] = useState("bg-white"); //bg-green
+    const activeColor = "bg-green text-white";
+    const inactiveColor = "bg-white text-black";
+    const [btnColor, setBtnColor] = useState(inactiveColor); //bg-green
     
     
     const updaterecurringDays = (event,weekday) =>{   
@@ -9,12 +11,12 @@ function WeekdayButton({weekday, width = "14%", height = "50px",setrecurringDays
         setrecurringDays(recurringDays => ({...recurringDays, [weekday]: !recurringDays[weekday]}));
         // set button color
         console.log(weekday);
-        setBtnColor(btnColor == "bg-white" ? "bg-green":"bg-white");
+        setBtnColor(btnColor == inactiveColor ? activeColor:inactiveColor);
     }
     
     return (
         <button
-            className={`rounded-[10px] font-bold border-2  text-black border-grey ${btnColor}`}
+            className={`rounded-[10px] font-bold border-2  border-grey ${btnColor}`}
             style={{ width: width, height: height, backgroundColor: btnColor }}
             onClick={(event)=>updaterecurringDays(event,weekday)}
         >
