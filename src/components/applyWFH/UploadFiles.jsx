@@ -3,7 +3,7 @@ import { ChangeEvent, useState } from 'react';
 // Code reference: https://www.codefrontend.com/file-upload-reactjs/
 
 function FileUploadMultiple() {
-  const [fileList, setFileList] = useState<FileList | null>(null);
+  const [fileList, setFileList] = useState(null); // file list
 
   const handleFileChange = (e) => { // e is of ChangeEvent Type  e: ChangeEvent<HTMLInputElement>)
     setFileList(e.target.files);

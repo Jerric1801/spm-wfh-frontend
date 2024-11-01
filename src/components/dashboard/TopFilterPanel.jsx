@@ -1,13 +1,14 @@
 import Button from '../common/Button';
 import "../../assets/styles/applyWFHModal.css";
 import { useState, useEffect, useContext } from 'react';
-import { isSameDay, isBefore, setMinutes, setHours, format, startOfMonth } from 'date-fns';
-import calendarData from '../../data/dashboard/calendar.json'
+import { isSameDay, isBefore, setMinutes, setHours, format, startOfMonth ,addDays, startOfDay, endOfDay,differenceInDays, set} from 'date-fns';
+//import calendarData from '../../data/dashboard/calendar.json'
 import { ScheduleContext } from '../../context/ScheduleContext';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import WeekdayButton from '../applyWFH/WeekdayButton';
-import FileUploadMultiple from '../applyWFH/UploadFiles';
+//import FileUploadMultiple from '../applyWFH/UploadFiles';
+//import FileBase64 from 'react-file-base64';
 
 function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Date(), endDate = new Date() }) {
     const { setCurrentMonth, fetchParams } = useContext(ScheduleContext);
@@ -23,28 +24,39 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
         'Sa':false,
         'Su':false,
     })
+    const dayNum = {
+        'M':1,
+        'Tu':2,
+        'W':3,
+        'Th':4,
+        'F':5,
+        'Sa':6,
+        'Su':0,
+    }
+    const numToDay = {
+        1:'M',
+        2:'Tu',
+        3:'W',
+        4:'Th',
+        5:'F',
+        6:'Sa',
+        0:'Su',
+    }
+
     
-    const [WFHRange, setWFHRange] = useState([new Date(), new Date()]);
+    const [WFHRange, setWFHRange] = useState([startOfDay(new Date()), endOfDay(new Date())]);
     const [WFHType, setWFHType] = useState('');
     const [WFHReason, setWFHReason] = useState('');
+    const [fileList, setFileList] = useState([]); // file list
+    const [base64Files, setBase64Files] = useState([]);
 
     const sendRequest = (event) => {
         event.preventDefault();
         let error = 0;
 
-        /*
-        if (WFHRange==[0,0]){
-            alert('Please select WFH date range!');
-            error +=1;
-        }else{*/
+
         const today = new Date();
-        /*
-        console.log(today);
-        console.log(isBefore(WFHRange[0],today));
-        //console.log(isBefore(WFHRange[1],today));
-        console.log('isSameDay');
-        console.log(isSameDay(WFHRange[0],today));
-        */
+
         if (isSameDay(WFHRange[0], today)) { // handle AM apply PM WFH special case
             // check if now is AM
             const todayNoon = setMinutes(setHours(new Date(), 12), 0);
@@ -62,18 +74,29 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
         }
         //}
 
+        //console.log(WFHRange);
 
-        let numDays = 0;
+        let recurDayNums = [];
         console.log(recurringDays);
+        
         for (var day in recurringDays){
-            numDays += recurringDays[day] ? 1:0;
+            if (recurringDays[day] == true){
+                recurDayNums.push(dayNum[day]);
+            }
         }
-        //console.log(numDays);
-        if (numDays ==0){
+        if (recurDayNums.length ==0){
             alert('Please select at least one day in a week.');
             error +=1;
         }
 
+        let dateArray = [];
+        let currentDate = WFHRange[0];
+        while(isBefore(currentDate, WFHRange[1])) { // small bug: when user doesnt select date range (auto today, isbefore doesnt work)
+            if(recurDayNums.includes(currentDate.getDay())){
+                dateArray.push(currentDate);
+            }
+            currentDate = addDays(currentDate,1);
+        }
 
         if (WFHType == '') {
             alert('Please select WFH type!');
@@ -83,14 +106,18 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
             alert('Please input your reason for WFH!');
             error += 1;
         }
+        
 
         if (error == 0) {
             if (confirm('Confirm submission of WFH request?')) {
-                // TODO send request to backend and fetch status
-                // employee JWT
-                // range,WFHType, WFHReason
+                const payload = {
+                    Dates:  dateArray,
+                    WFHType: WFHType,
+                    WFHReason: WFHReason,
+                    Document: base64Files,
+                }
 
-                // return status success/failure to inform user
+                // TODO integration w endpoint
                 const status = true;
 
                 if (status) {
@@ -106,12 +133,89 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
 
     useEffect(() => {
         setModalDateRange(`${WFHRange[0].toLocaleDateString()} to ${WFHRange[1].toLocaleDateString()}`);
+        if(differenceInDays(WFHRange[0],WFHRange[1])<7){
+            //console.log('disabling some day buttons...');
+            // check which days to disable
+            let disableVar = {
+                'M': true,
+                'Tu': true,
+                'W': true,
+                'Th': true,
+                'F': true,
+                'Sa': true,
+                'Su': true,
+            }; 
+            let currentDate = WFHRange[0];
+            while(isBefore(currentDate, WFHRange[1])) { // small bug: when user doesnt select date range (auto today, isbefore doesnt work)
+                disableVar[numToDay[currentDate.getDay()]]=false;
+                currentDate = addDays(currentDate,1);
+            }
+            console.log(disableVar)
+            setButtonDisabled(disableVar);
+
+        }
     }, [WFHRange]);
+
+    
+
+    const [buttonDisabled, setButtonDisabled] = useState({
+        'M': false,
+        'Tu': false,
+        'W': false,
+        'Th': false,
+        'F': false,
+        'Sa': false,
+        'Su': false,
+    }); 
+
+    const handleFileChange = (e) => { // one step late
+        const files = Array.from(e.target.files);
+        setFileList(files);
+        
+        const fileReaders = [];
+        const base64Array = [];
+
+        files.forEach((file, index) => {
+            const reader = new FileReader();
+            fileReaders.push(reader);
+            reader.onload = (event) => {
+                base64Array.push(event.target.result);
+
+                // Check if all files are processed
+                if (base64Array.length === files.length) {
+                    setBase64Files(base64Array);
+                }
+            };
+
+            reader.readAsDataURL(file);
+        });
+    }
+
+    useEffect(() => {
+        console.log(base64Files);
+    }, [base64Files]);
+
+    useEffect(() => {
+        console.log(fileList);
+        // wanted to list the files uploaded but kiv, non-priority
+        //fileList.map((file)=>{console.log(file.name)});
+        /*
+                                            <ul>
+                                        {fileList.map((file) => (
+
+                                        </li>
+                                        ))}
+                                    </ul>
+        */
+    }, [fileList]);
+
+
 
 
     const handleCalenButton = (e) => {
         e.preventDefault();
         setShowCalen(!showCalen);
+
     }
 
     const handleMonthChange = (direction) => {
@@ -330,13 +434,8 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
                                     <br/>
 
                                     <div>
-                                        <WeekdayButton weekday='M' setrecurringDays={setrecurringDays}/>
-                                        <WeekdayButton weekday='Tu' setrecurringDays={setrecurringDays}/>
-                                        <WeekdayButton weekday='W' setrecurringDays={setrecurringDays}/>
-                                        <WeekdayButton weekday='Th' setrecurringDays={setrecurringDays}/>
-                                        <WeekdayButton weekday='F' setrecurringDays={setrecurringDays}/>
-                                        <WeekdayButton weekday='Sa' setrecurringDays={setrecurringDays}/>
-                                        <WeekdayButton weekday='Su' setrecurringDays={setrecurringDays}/>
+                                        {Object.entries(recurringDays).map(([day,temp]) => (<WeekdayButton weekday={day} setrecurringDays={setrecurringDays} disabled={buttonDisabled[{day}]}/>))}
+                                        
                                     </div>
 
                                     <br />
@@ -353,8 +452,9 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
 
                                     <br/>
                                     <br/>
-                                    <input type='file' multiple></input>
 
+                                    <input type='file' multiple onChange={handleFileChange} />
+                                    
                                 </div>
                             </div>
 
