@@ -1,80 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Check, X } from 'lucide-react';
 import { cn } from '../../utils/tailwindUtils';
+import { fetchRequests } from '../../services/endpoints/manageRequests';
 
-// This can be replaced with API call later
-// const fetchNotifications = async () => {
-//   try {
-//     const response = await fetch('/api/notifications', {
-//       headers: { Authorization: `Bearer ${yourJWTToken}` },
-//     });
-//     if (!response.ok) throw new Error("Failed to fetch notifications");
-//     const data = await response.json();
-//     return data;
-//   } catch (error) {
-//     console.error("Error fetching notifications:", error);
-//     return [];
-//   }
+// const fetchNotifications = () => {
+//   return Promise.resolve([
+//     {
+//       id: 1,
+//       status: 'Approved',
+//       date: '28/10-29/10',
+//       type: 'WFH FULL DAY',
+//       timestamp: '2 min ago'
+//     },
+//     {
+//       id: 2,
+//       status: 'Approved',
+//       date: '15/09-16/09',
+//       type: 'WFH FULL DAY',
+//       timestamp: '2 hours ago'
+//     },
+//     {
+//       id: 3,
+//       status: 'Rejected',
+//       date: '9/09-13/09',
+//       type: 'WFH PM',
+//       timestamp: '2 hours ago'
+//     },
+//     {
+//       id: 4,
+//       status: 'Approved',
+//       date: '08/09',
+//       type: 'WFH AM',
+//       timestamp: '2 days ago'
+//     },
+//     {
+//       id: 5,
+//       status: 'Approved',
+//       date: '05/09-07/09',
+//       type: 'WFH PM',
+//       timestamp: '2 days ago'
+//     }
+//   ]);
 // };
-const fetchNotifications = () => {
-  return Promise.resolve([
-    {
-      id: 1,
-      status: 'Approved',
-      date: '28/10-29/10',
-      type: 'WFH FULL DAY',
-      timestamp: '2 min ago'
-    },
-    {
-      id: 2,
-      status: 'Approved',
-      date: '15/09-16/09',
-      type: 'WFH FULL DAY',
-      timestamp: '2 hours ago'
-    },
-    {
-      id: 3,
-      status: 'Rejected',
-      date: '9/09-13/09',
-      type: 'WFH PM',
-      timestamp: '2 hours ago'
-    },
-    {
-      id: 4,
-      status: 'Approved',
-      date: '08/09',
-      type: 'WFH AM',
-      timestamp: '2 days ago'
-    },
-    {
-      id: 5,
-      status: 'Approved',
-      date: '05/09-07/09',
-      type: 'WFH PM',
-      timestamp: '2 days ago'
-    }
-  ]);
-};
 
-const NotificationSystem = () => {
+const NotificationSystem = ({ userRole }) => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);
   const [lastChecked, setLastChecked] = useState(Date.now());
 
   useEffect(() => {
-    // Fetch notifications
+    // Function to fetch notifications
     const getNotifications = async () => {
-      const data = await fetchNotifications();
-      setNotifications(data);
-      
-      // Check for new notifications since last check
-      const hasNew = data.some(notification => 
-        new Date(notification.timestamp) > new Date(lastChecked)
-      );
-      setHasUnread(hasNew);
+      try {
+        const data = await fetchRequests(true); // Assuming `true` indicates summary data for notifications
+        setNotifications(data);
+
+        // Check for new notifications since last check
+        const hasNew = data.some(notification =>
+          new Date(notification.timestamp) > new Date(lastChecked)
+        );
+        setHasUnread(hasNew);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
     };
 
+    // Initial call to fetch notifications
     getNotifications();
 
     // Poll for new notifications every minute -> cron job
