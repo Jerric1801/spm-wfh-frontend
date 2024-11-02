@@ -14,8 +14,8 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
     const days = daysInMonth.map((date) => {
         const matchingData = fetchParams.filteredData.find(item => isSameDay(new Date(item.date), date));
         
-        const requestsForDay = staffRequests.data 
-            ? staffRequests.data.filter(request => {
+        const requestsForDay = staffRequests
+            ? staffRequests.filter(request => {
                 const requestStartDate = new Date(request.Start_Date);
                 const requestEndDate = new Date(request.End_Date);
                 const isWithinRange = date >= requestStartDate && date <= requestEndDate;

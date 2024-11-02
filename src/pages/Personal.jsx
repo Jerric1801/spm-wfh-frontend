@@ -27,11 +27,10 @@ function Personal() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await getStaffSchedule();
-                // Add a unique key to each record using map
-                const dataWithKeys = response.data.map((record, index) => ({
+                const response = await fetchRequests();
+                const dataWithKeys = response.map((record, index) => ({
                     ...record,
-                    key: record.Request_ID // You can use Request_ID as the key if it's unique
+                    key: record.Request_ID 
                 }));
                 setDataSource(dataWithKeys); 
             } catch (error) {
@@ -40,7 +39,7 @@ function Personal() {
                 setIsLoading(false);
             }
         };
-    
+
         fetchData();
     }, []);
 
@@ -51,6 +50,7 @@ function Personal() {
 
     const handleCloseModal = () => {
         setIsModalVisible(false);
+        setIsWithdrawModalVisible(false)
         setSelectedRecord(null);
     }
 
@@ -73,29 +73,29 @@ function Personal() {
             console.error("No request selected to withdraw");
             return;
         }
-    
+
         // Prepare the payload with requestId and requestReason
         const payload = {
-            requestId: selectedRecord.id,
+            requestId: selectedRecord.Request_ID ,
             requestReason: withdrawReason,
         };
-    
+
         // Call the API to withdraw the request
         const response = await withdrawRequest(payload);
-    
+
         if (response && response.message === 'Request withdrawn successfully') {
             // Update the local state to reflect the change
             const updatedDataSource = dataSource.map((item) =>
                 item.id === selectedRecord.id ? { ...item, status: 'Withdrawn' } : item
             );
-    
+
             setDataSource(updatedDataSource);
             console.log('Withdrawing request:', selectedRecord);
             console.log('Reason:', withdrawReason);
         } else {
             console.error('Failed to withdraw request:', response);
         }
-    
+
         // Close the modal after submission
         setIsWithdrawModalVisible(false);
         setSelectedRecord(null);
@@ -145,21 +145,21 @@ function Personal() {
             title: 'Action',
             key: 'action',
             render: (record) => (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                   
-                    <Button text="Withdraw" 
-                    color={record.status === 'Withdrawn' ? "bg-gray" : "bg-orange"} 
-                    onClick={() => handleWithdraw(record)}
-                    width="100px" 
-                    height="40px"
-                    disabled={record.status === 'Withdrawn'}
-                     />
-        
-                    <img 
-                       src={ExpandButton} 
-                       alt="Expand Button" 
-                       style={{ height:'30px', width: '30px', cursor: 'pointer'}} 
-                       onClick={()=>viewRequestDetails(record)}/>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+
+                    <Button text="Withdraw"
+                        color={record.status === 'Withdrawn' ? "bg-gray" : "bg-orange"}
+                        onClick={() => handleWithdraw(record)}
+                        width="100px"
+                        height="40px"
+                        disabled={record.status === 'Withdrawn'}
+                    />
+
+                    <img
+                        src={ExpandButton}
+                        alt="Expand Button"
+                        style={{ height: '30px', width: '30px', cursor: 'pointer' }}
+                        onClick={() => viewRequestDetails(record)} />
                 </div>
             ),
         },
@@ -184,85 +184,85 @@ function Personal() {
 
             {/* Short Summary on the right */}
             <div className="col-span-12 lg:col-span-3 row-span-11 bg-white p-8">
-    <h2 className="text-xl font-bold">Short Summary</h2>
-    <div className="mt-4">
-        <div className="flex justify-between items-center">
-            <p className="text-lg">Requests</p>
-            <p className="text-2xl font-bold">{totalRequests}</p>
-        </div>
-        
-        {/* Progress bar with segments */}
-        <div className="mt-4 w-full h-4 rounded-full overflow-hidden bg-gray-200">
-            <div 
-                style={{ width: `${percentageByStatus('Approved')}%` }} 
-                className="h-full bg-green"
-            ></div>
-            <div 
-                style={{ width: `${percentageByStatus('Pending')}%`,  backgroundColor: '#FFA500' }} 
-                className="h-full"
-            ></div>
-            <div 
-                style={{ width: `${percentageByStatus('Rejected')}%` }} 
-                className="h-full bg-red"
-            ></div>
-            <div 
-                style={{ width: `${percentageByStatus('Withdrawn')}%` }} 
-                className="h-full bg-blue"
-            ></div>
-        </div>
+                <h2 className="text-xl font-bold">Short Summary</h2>
+                <div className="mt-4">
+                    <div className="flex justify-between items-center">
+                        <p className="text-lg">Requests</p>
+                        <p className="text-2xl font-bold">{totalRequests}</p>
+                    </div>
 
-        {/* Percentage labels */}
-        <div className="mt-6">
-            <div className="flex justify-between items-center mb-2">
-                <span className="text-green">Approved</span>
-                <span>{percentageByStatus('Approved')}%</span>
+                    {/* Progress bar with segments */}
+                    <div className="mt-4 w-full h-4 rounded-full overflow-hidden bg-gray-200">
+                        <div
+                            style={{ width: `${percentageByStatus('Approved')}%` }}
+                            className="h-full bg-green"
+                        ></div>
+                        <div
+                            style={{ width: `${percentageByStatus('Pending')}%`, backgroundColor: '#FFA500' }}
+                            className="h-full"
+                        ></div>
+                        <div
+                            style={{ width: `${percentageByStatus('Rejected')}%` }}
+                            className="h-full bg-red"
+                        ></div>
+                        <div
+                            style={{ width: `${percentageByStatus('Withdrawn')}%` }}
+                            className="h-full bg-blue"
+                        ></div>
+                    </div>
+
+                    {/* Percentage labels */}
+                    <div className="mt-6">
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-green">Approved</span>
+                            <span>{percentageByStatus('Approved')}%</span>
+                        </div>
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-orange">Pending</span>
+                            <span>{percentageByStatus('Pending')}%</span>
+                        </div>
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-red">Rejected</span>
+                            <span>{percentageByStatus('Rejected')}%</span>
+                        </div>
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-blue">Withdrawn</span>
+                            <span>{percentageByStatus('Withdrawn')}%</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="flex justify-between items-center mb-2">
-                <span className="text-orange">Pending</span>
-                <span>{percentageByStatus('Pending')}%</span>
-            </div>
-            <div className="flex justify-between items-center mb-2">
-                <span className="text-red">Rejected</span>
-                <span>{percentageByStatus('Rejected')}%</span>
-            </div>
-            <div className="flex justify-between items-center mb-2">
-                <span className="text-blue">Withdrawn</span>
-                <span>{percentageByStatus('Withdrawn')}%</span>
-            </div>
-        </div>
-    </div>
-</div>
-                
-                {/* Modal */}
-                <Modal
-                title={`Details on Request #${selectedRecord?.id}`}
+
+            {/* Modal */}
+            <Modal
+                title={`Details on Request #${selectedRecord?.Request_ID}`}
                 open={isModalVisible}
                 onCancel={handleCloseModal}
                 footer={[
                     <Button key="close" text="Close" color="bg-gray" onClick={handleCloseModal} />,
-                    <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={() => handleWithdraw(selectedRecord)} />,
-                ]}                
+                    <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={() => handleWithdrawRequest()} />,
+                ]}
             >
                 {selectedRecord && (
                     <div>
                         <p><strong>Date Range:</strong> {new Date(selectedRecord.Start_Date).toLocaleDateString()} - {new Date(selectedRecord.End_Date).toLocaleDateString()}</p>
                         <p><strong>WFH Type:</strong> {selectedRecord.WFH_Type}</p>
                         <p><strong>Reason:</strong> {selectedRecord.Request_Reason}</p>
-                        <SupportingDocuments documents={sampleDocuments} />
-                        <p><strong>Status:</strong> <Tag text={selectedRecord.Current_Status} color={selectedRecord.Current_Status === 'Approved' ? 'green' : selectedRecord.Current_Status === 'Pending' ? 'orange' : 'red'} /></p>
+                        {/* <SupportingDocuments documents={sampleDocuments} /> */}
+                        <div><strong>Status:</strong> <Tag text={selectedRecord.Current_Status} color={selectedRecord.Current_Status === 'Approved' ? 'green' : selectedRecord.Current_Status === 'Pending' ? 'orange' : 'red'} /></div>
                     </div>
                 )}
             </Modal>
 
             {/* Withdraw Modal */}
             <Modal
-             title={`Details on Request #${selectedRecord?.id}`}
-             open={isModalVisible}
-             onCancel={handleCloseModal}
-             footer={[
-              <Button key="close" text="Close" color="bg-gray" onClick={handleCloseModal} />,
-              <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={() => handleWithdraw(selectedRecord)} />,
-           ]}
+                title={`Details on Request #${selectedRecord?.Request_ID}`}
+                open={isWithdrawModalVisible}
+                onCancel={handleCloseModal}
+                footer={[
+                    <Button key="close" text="Close" color="bg-gray" onClick={handleCloseModal} />,
+                    <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={() =>  handleWithdrawRequest()} />,
+                ]}
             >
                 <Input.TextArea
                     rows={4}

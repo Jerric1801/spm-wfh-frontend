@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useMemo } from 'react';
 import { getSchedule } from '../services/endpoints/schedule';
-import { getStaffSchedule } from '../services/endpoints/manageRequests'
+import { fetchRequests } from '../services/endpoints/manageRequests'
 import { startOfMonth, endOfMonth, addMonths } from 'date-fns'; 
 
 const ScheduleContext = createContext();
@@ -52,9 +52,10 @@ const ScheduleProvider = ({ children }) => {
         };
 
         const fetchStaffRequests = async () => { 
-            console.log('💻 API 2: getStaff called')
+            console.log('💻 API 2: fetchRequests called')
             try {
-                const data = await getStaffSchedule();
+                const data = await fetchRequests();
+                console.log(data)
                 setStaffRequests(data);
             } catch (error) {
                 console.error("Error fetching staff requests:", error);
