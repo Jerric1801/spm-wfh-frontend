@@ -1,17 +1,20 @@
 //Dashboard Components
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TopProfileBar from '../components/dashboard/TopProfileBar';
 import { Input, Table, Modal } from 'antd';
 import Button from '../components/common/Button';
-import Tag from '../components/common/Tag'; 
+import Tag from '../components/common/Tag';
 import ExpandButton from '../assets/images/expand.png';
 import SupportingDocuments from '../components/request/SupportingDocumentsModal';
+import { getStaffSchedule } from '../services/endpoints/manageRequests';
 
 function Personal() {
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedRecord, setSelectedRecord] = useState(null); 
+    const [selectedRecord, setSelectedRecord] = useState(null);
     const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
-    const [withdrawReason, setWithdrawReason] = useState(''); // State to store the withdrawal reason
+    const [withdrawReason, setWithdrawReason] = useState('');
+    const [dataSource, setDataSource] = useState([]); // State to store fetched data
+    const [isLoading, setIsLoading] = useState(true); // State to manage loading state
 
     const sampleDocuments = [
         {
@@ -28,58 +31,27 @@ function Personal() {
         }
     ];
 
-    const dataSource = [
-        {
-            key: '1',
-            id: '48899',
-            dateRange: '28 Oct - 29 Oct',
-            WFHType: 'AM',
-            status: 'Pending',
-            reason: 'Deepavali Prep',
-        },
-        {
-            key: '2',
-            id: '56777',
-            dateRange: '3 Oct - 5 Oct',
-            WFHType: 'FD',
-            status: 'Pending',
-            reason: 'Birthday',
-        },
-        {
-            key: '3',
-            id: '66004',
-            dateRange: '20 Sep - 22 Sep',
-            WFHType: 'AM',
-            status: 'Approved',
-            reason: 'Babysitting',
-        },
-        {
-            key: '4',
-            id: '35804',
-            dateRange: '16 Sep - 17 Sep',
-            WFHType: 'FD',
-            status: 'Approved',
-            reason: 'Child Care',
-        },
-        {
-            key: '5',
-            id: '54904',
-            dateRange: '9 Sep - 13 Sep',
-            WFHType: 'PM',
-            status: 'Rejected',
-            reason: 'Babysitting',
-        },
-        {
-            key: '6',
-            id: '31234',
-            dateRange: '20 Aug - 25 Aug',
-            WFHType: 'FD',
-            status: 'Approved',
-            reason: 'Dogsitting',
-        },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await getStaffSchedule();
+                // Add a unique key to each record using map
+                const dataWithKeys = response.data.map((record, index) => ({
+                    ...record,
+                    key: record.Request_ID // You can use Request_ID as the key if it's unique
+                }));
+                setDataSource(dataWithKeys); 
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+    
+        fetchData();
+    }, []);
 
-    const viewRequestDetails =(record) => {
+    const viewRequestDetails = (record) => {
         setSelectedRecord(record);
         setIsModalVisible(true);
     }
@@ -91,40 +63,42 @@ function Personal() {
 
     const handleWithdraw = (record) => {
         setSelectedRecord(record);
-        setIsWithdrawModalVisible(true);  // Show the withdrawal modal
+        setIsWithdrawModalVisible(true);
     };
 
     const handleWithdrawRequest = () => {
-        // For now, we simply log the selected record and reason
         console.log('Withdrawing request:', selectedRecord);
         console.log('Reason:', withdrawReason);
 
-        // Close the modal after submission
         setIsWithdrawModalVisible(false);
         setSelectedRecord(null);
     };
-    
+
 
     const columns = [
         {
             title: 'ID',
-            dataIndex: 'id',
-            key: 'id',
+            dataIndex: 'Request_ID', // Changed to Request_ID
+            key: 'Request_ID',
         },
         {
             title: 'Date Range',
-            dataIndex: 'dateRange',
             key: 'dateRange',
+            render: (record) => {
+                const startDate = new Date(record.Start_Date).toLocaleDateString();
+                const endDate = new Date(record.End_Date).toLocaleDateString();
+                return `${startDate} - ${endDate}`;
+            }
         },
         {
             title: 'WFH Type',
-            dataIndex: 'WFHType',
-            key: 'WFHType',
+            dataIndex: 'WFH_Type', // Changed to WFH_Type
+            key: 'WFH_Type',
         },
         {
             title: 'Status',
-            dataIndex: 'status',
-            key: 'status',
+            dataIndex: 'Current_Status', // Changed to Current_Status
+            key: 'Current_Status',
             render: (status) => {
                 let color = '';
                 if (status === 'Approved') color = 'green';
@@ -135,21 +109,21 @@ function Personal() {
         },
         {
             title: 'Reason',
-            dataIndex: 'reason',
-            key: 'reason',
+            dataIndex: 'Request_Reason', // Changed to Request_Reason
+            key: 'Request_Reason',
         },
         {
             title: 'Action',
             key: 'action',
             render: (record) => (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Button text="Change" color ="bg-lightblue" onClick={() => changeRequest(record)} width="100px" height="40px" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Button text="Change" color="bg-lightblue" onClick={() => changeRequest(record)} width="100px" height="40px" />
                     <Button text="Withdraw" color="bg-orange" onClick={() => handleWithdraw(record)} width="100px" height="40px" />
-                    <img 
-                       src={ExpandButton} 
-                       alt="Expand Button" 
-                       style={{ height:'30px', width: '30px', cursor: 'pointer'}} 
-                       onClick={()=>viewRequestDetails(record)}/>
+                    <img
+                        src={ExpandButton}
+                        alt="Expand Button"
+                        style={{ height: '30px', width: '30px', cursor: 'pointer' }}
+                        onClick={() => viewRequestDetails(record)} />
                 </div>
             ),
         },
@@ -165,7 +139,11 @@ function Personal() {
             {/* Main Content */}
             <div className="col-span-9 row-span-11 bg-gray-100 p-8 overflow-x-auto">
                 {/* Table */}
-                <Table dataSource={dataSource} columns={columns} pagination={false} />
+                {isLoading ? (
+                    <p>Loading...</p>
+                ) : (
+                    <Table dataSource={dataSource} columns={columns} pagination={false} />
+                )}
             </div>
 
             {/* Short Summary on the right */}
@@ -174,9 +152,10 @@ function Personal() {
                 <div className="mt-4">
                     <div className="flex justify-between items-center">
                         <p className="text-lg">Requests</p>
-                        <p className="text-2xl font-bold">60</p>
+                        <p className="text-2xl font-bold">{dataSource.length}</p> {/* Dynamically show total requests */}
                     </div>
                     <div className="mt-6">
+                        {/* You'll need to calculate these percentages based on the fetched data */}
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-green-500">Approved</span>
                             <span>50%</span>
@@ -192,11 +171,11 @@ function Personal() {
                     </div>
                 </div>
             </div>
-                
-                {/* Modal */}
-                <Modal
+
+            {/* Modal */}
+            <Modal
                 title={`Details on Request #${selectedRecord?.id}`}
-                open ={isModalVisible}
+                open={isModalVisible}
                 onCancel={handleCloseModal}
                 footer={[
                     <Button text="Close" color="bg-gray" onClick={handleCloseModal} />,
@@ -206,13 +185,11 @@ function Personal() {
             >
                 {selectedRecord && (
                     <div>
-                        <p><strong>Date Range:</strong> {selectedRecord.dateRange}</p>
-                        <p><strong>WFH Type:</strong> {selectedRecord.WFHType}</p>
-                        <p><strong>Reason:</strong> {selectedRecord.reason}</p>
-                        {/* <SupportingDocuments documents={selectedRecord.supportingDocuments} /> */}
-                        <SupportingDocuments documents={sampleDocuments}/>
-                        <p><strong>Status:</strong> <Tag text={selectedRecord.status} color={selectedRecord.status === 'Approved' ? 'green' : selectedRecord.status === 'Pending' ? 'orange' : 'red'} /></p>
-                        {/* Add more fields here as necessary */}
+                        <p><strong>Date Range:</strong> {new Date(selectedRecord.Start_Date).toLocaleDateString()} - {new Date(selectedRecord.End_Date).toLocaleDateString()}</p>
+                        <p><strong>WFH Type:</strong> {selectedRecord.WFH_Type}</p>
+                        <p><strong>Reason:</strong> {selectedRecord.Request_Reason}</p>
+                        <SupportingDocuments documents={sampleDocuments} />
+                        <p><strong>Status:</strong> <Tag text={selectedRecord.Current_Status} color={selectedRecord.Current_Status === 'Approved' ? 'green' : selectedRecord.Current_Status === 'Pending' ? 'orange' : 'red'} /></p>
                     </div>
                 )}
             </Modal>
@@ -238,4 +215,3 @@ function Personal() {
 }
 
 export default Personal;
-
