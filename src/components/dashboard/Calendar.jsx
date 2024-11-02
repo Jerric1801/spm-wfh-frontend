@@ -4,7 +4,7 @@ import Day from './Day'
 import { ScheduleContext } from '../../context/ScheduleContext';
 
 function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDragging, currentMonth }) {
-    const { fetchParams } = useContext(ScheduleContext);
+    const { fetchParams, staffRequests } = useContext(ScheduleContext);
     const start = startOfMonth(currentMonth);
     const end = endOfMonth(currentMonth); 
     const daysInMonth = eachDayOfInterval({ start, end });
@@ -13,6 +13,16 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
 
     const days = daysInMonth.map((date) => {
         const matchingData = fetchParams.filteredData.find(item => isSameDay(new Date(item.date), date));
+        
+        const requestsForDay = staffRequests.data 
+            ? staffRequests.data.filter(request => {
+                const requestStartDate = new Date(request.Start_Date);
+                const requestEndDate = new Date(request.End_Date);
+                const isWithinRange = date >= requestStartDate && date <= requestEndDate;
+                return isWithinRange
+            })
+            : [];
+
         const tags = matchingData?.departments.flatMap(department =>
             department.teams.flatMap(team =>
                 team.members.map(member => member.WFH_Type)
@@ -24,6 +34,7 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
             number: format(date, 'd'),
             isToday: isSameDay(date, new Date()),
             tags: tags,
+            requests: requestsForDay 
         };
     });
 
@@ -183,6 +194,7 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
                             day={day}
                             tags={day.tags}
                             onSelect={handleDaySelect}
+                            requests={day.requests} 
                             selectedDateRange={selectedDateRange}
                             onMouseOver={() => handleMouseOver(day.date)}
                         />

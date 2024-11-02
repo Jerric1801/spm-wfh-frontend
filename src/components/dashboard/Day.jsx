@@ -2,11 +2,14 @@ import Tag from '../common/Tag';
 import { useState, useEffect, useContext } from 'react';
 import { isSameDay } from 'date-fns';
 import { ScheduleContext } from '../../context/ScheduleContext';
+import RequestModal from './RequestModal';
 
-function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
+
+function Day({ day, tags, requests, onSelect, selectedDateRange, onMouseOver }) {
     const isToday = day.isToday;
 
     const { fetchParams } = useContext(ScheduleContext);
+    const [selectedRequest, setSelectedRequest] = useState(null);
     const [memberCount, setMemberCount] = useState({ IN: 0, WFH: 0 });
 
     const isWithinRange = selectedDateRange &&
@@ -16,14 +19,14 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
     useEffect(() => {
         const matchingData = fetchParams.filteredData.find(item => isSameDay(new Date(item.date), day.date));
 
-        if (matchingData) { 
+        if (matchingData) {
             let amCount = 0;
             let pmCount = 0;
             let wdCount = 0;
             let inCount = 0;
 
 
-            if (fetchParams.department && fetchParams.team) { 
+            if (fetchParams.department && fetchParams.team) {
                 const members = matchingData.departments
                     .find(d => d.department === fetchParams.department)?.teams
                     .find(t => t.team === fetchParams.team)?.members;
@@ -73,26 +76,9 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
         }
     }, [day.date, fetchParams]);
 
-
-    // const tagData = [
-    //     { text: "WFH Confirmed", color: "green" },
-    //     { text: "WFH Pending", color: "orange" },
-    //     { text: "WFH Rejected", color: "red" },
-    //     { text: "Public Holiday", color: "grey" },
-    // ];
-
-    // const filteredTags = tags ? tagData.filter(tag => tags.includes(tag.text)) : [];
-
     const handleClick = () => {
         onSelect(day.date);
     };
-
-    // let wfhPercentageColor = 'red';
-    // if (day.wfhPercentage?.in >= 60) {
-    //     wfhPercentageColor = 'green';
-    // } else if (day.wfhPercentage?.in >= 30) {
-    //     wfhPercentageColor = 'orange';
-    // }
 
     return (
         <div
@@ -102,9 +88,28 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
             onMouseOver={onMouseOver}>
             <div className={`w-7 flex justify-center align-center rounded-[99px] ${isToday ? 'bg-green' : ''}  ${isToday ? 'text-white' : 'text-gray-500'}`}>{day.number}</div>
             <div className="absolute bottom-2 left-2">
-                {/* {filteredTags.map((tag, index) => (
-                    <Tag key={index} text={tag.text} color={tag.color} />
-                ))} */}
+                {requests.map((request, index) => {
+                    let color = "gray"; // Default color 
+                    switch (request.Current_Status) {
+                        case "Approved": color = "green"; break;
+                        case "Pending": color = "orange"; break;
+                        case "Rejected": color = "red"; break;
+                    }
+
+                    return (
+                        <div
+                            key={index}
+                            onClick={() => setSelectedRequest(request)}
+                            style={{ display: 'inline-block' }} // To make the div behave like an inline element
+                        >
+                            <Tag
+                                text={`${request.WFH_Type} ${request.Current_Status}`}
+                                color={color}
+                            />
+                        </div>
+
+                    );
+                })}
             </div>
             <div className="absolute top-2 right-2 grid grid-cols-2 gap-1">
 
@@ -118,6 +123,15 @@ function Day({ day, tags, onSelect, selectedDateRange, onMouseOver }) {
                     />
                 ))}
             </div>
+            {selectedRequest && (
+                <div className="fixed top-0 left-0 w-screen h-screen overflow-hidden bg-black/40 flex justify-center items-center z-10"> 
+                    <RequestModal
+                        request={selectedRequest}
+                        onClose={() => setSelectedRequest(null)}
+                    />
+
+                </div>
+            )}
         </div>
     );
 }

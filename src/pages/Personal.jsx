@@ -5,6 +5,7 @@ import { Input, Table, Modal } from 'antd';
 import Button from '../components/common/Button';
 import Tag from '../components/common/Tag'; 
 import ExpandButton from '../assets/images/expand.png';
+import SupportingDocuments from '../components/request/SupportingDocumentsModal';
 
 function Personal() {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -12,6 +13,20 @@ function Personal() {
     const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
     const [withdrawReason, setWithdrawReason] = useState(''); // State to store the withdrawal reason
 
+    const sampleDocuments = [
+        {
+            fileName: "Project_Report.pdf",
+            fileUrl: "https://example.com/documents/project_report.pdf"
+        },
+        {
+            fileName: "Meeting_Minutes.docx",
+            fileUrl: "https://example.com/documents/meeting_minutes.docx"
+        },
+        {
+            fileName: "Budget_Summary.xlsx",
+            fileUrl: "https://example.com/documents/budget_summary.xlsx"
+        }
+    ];
 
     const dataSource = [
         {
@@ -194,6 +209,8 @@ function Personal() {
                         <p><strong>Date Range:</strong> {selectedRecord.dateRange}</p>
                         <p><strong>WFH Type:</strong> {selectedRecord.WFHType}</p>
                         <p><strong>Reason:</strong> {selectedRecord.reason}</p>
+                        {/* <SupportingDocuments documents={selectedRecord.supportingDocuments} /> */}
+                        <SupportingDocuments documents={sampleDocuments}/>
                         <p><strong>Status:</strong> <Tag text={selectedRecord.status} color={selectedRecord.status === 'Approved' ? 'green' : selectedRecord.status === 'Pending' ? 'orange' : 'red'} /></p>
                         {/* Add more fields here as necessary */}
                     </div>

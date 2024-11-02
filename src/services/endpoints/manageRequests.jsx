@@ -3,7 +3,6 @@ import api from '../api';
 const getPending = async () => { 
     try {
         const response = await api.get(`/manage-request/pending`);
-        console.log(response.data) 
         return response.data;
     } catch (error) {
         console.error("Error fetching pending request", error);
@@ -22,8 +21,18 @@ const manageRequest = async (payload) => {
     }
 }
 
+const getStaffSchedule = async () => {
+    try {
+        const response = await api.get(`/manage-request/getStaff`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching pending request", error);
+        return [];
+    }
+}
 
 export {
     getPending,
-    manageRequest
+    manageRequest,
+    getStaffSchedule
 }

@@ -7,6 +7,7 @@ import Button from '../components/common/Button';
 import ExpandButton from '../assets/images/expand.png';
 import { isSameDay } from 'date-fns';
 import { getPending, manageRequest } from '../services/endpoints/manageRequests';
+import SupportingDocuments from '../components/request/SupportingDocumentsModal';
 
 //140008
 //151408 Phillip Lee
@@ -22,6 +23,20 @@ function TeamRequest() {
   { 'date': '2024-10-31', 'reason': 'Big boss meeting' },
   { 'date': '2024-11-11', 'reason': 'Big sale!' }];
 
+  const sampleDocuments = [
+    {
+        fileName: "Project_Report.pdf",
+        fileUrl: "https://example.com/documents/project_report.pdf"
+    },
+    {
+        fileName: "Meeting_Minutes.docx",
+        fileUrl: "https://example.com/documents/meeting_minutes.docx"
+    },
+    {
+        fileName: "Budget_Summary.xlsx",
+        fileUrl: "https://example.com/documents/budget_summary.xlsx"
+    }
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -223,7 +238,8 @@ function TeamRequest() {
             <p><strong>Date Range:</strong> {selectedRecord.dateRange}</p>
             <p><strong>WFH Type:</strong> {selectedRecord.wfhType}</p>
             <p><strong>Reason:</strong> {selectedRecord.reason}</p>
-
+            {/* <SupportingDocuments documents={selectedRecord.supportingDocuments} /> */}
+            <SupportingDocuments documents={sampleDocuments}/>
           </div>
         )}
       </Modal>
