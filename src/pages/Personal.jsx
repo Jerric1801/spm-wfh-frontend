@@ -5,7 +5,7 @@ import { Input, Table, Modal } from 'antd';
 import Button from '../components/common/Button';
 import Tag from '../components/common/Tag'; 
 import ExpandButton from '../assets/images/expand.png';
-import { fetchRequests } from '../services/endpoints/manageRequests'
+import { fetchRequests, withdrawRequest } from '../services/endpoints/manageRequests'
 
 function Personal() {
     const [dataSource, setDataSource] = useState([]); // Ensure it's initialized
@@ -47,14 +47,34 @@ function Personal() {
         return `${percentage}`;
     };
 
-    const handleWithdrawRequest = () => {
-        const updatedDataSource = dataSource.map((item) =>
-            item.id === selectedRecord.id ? { ...item, status: 'Withdrawn' } : item
-        );
-        
-        setDataSource(updatedDataSource);
-        console.log('Withdrawing request:', selectedRecord);
-        console.log('Reason:', withdrawReason);
+    const handleWithdrawRequest = async () => {
+        if (!selectedRecord) {
+            console.error("No request selected to withdraw");
+            return;
+        }
+    
+        // Prepare the payload with requestId and requestReason
+        const payload = {
+            requestId: selectedRecord.id,
+            requestReason: withdrawReason,
+        };
+    
+        // Call the API to withdraw the request
+        const response = await withdrawRequest(payload);
+    
+        if (response && response.message === 'Request withdrawn successfully') {
+            // Update the local state to reflect the change
+            const updatedDataSource = dataSource.map((item) =>
+                item.id === selectedRecord.id ? { ...item, status: 'Withdrawn' } : item
+            );
+    
+            setDataSource(updatedDataSource);
+            console.log('Withdrawing request:', selectedRecord);
+            console.log('Reason:', withdrawReason);
+        } else {
+            console.error('Failed to withdraw request:', response);
+        }
+    
         // Close the modal after submission
         setIsWithdrawModalVisible(false);
         setSelectedRecord(null);
@@ -190,9 +210,9 @@ function Personal() {
                 open ={isModalVisible}
                 onCancel={handleCloseModal}
                 footer={[
-                    <Button text="Close" color="bg-gray" onClick={handleCloseModal} />,
-                    <Button text="Withdraw" color="bg-orange" onClick={() => handleWithdraw(selectedRecord)} />,
-                ]}
+                    <Button key="close" text="Close" color="bg-gray" onClick={handleCloseModal} />,
+                    <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={() => handleWithdraw(selectedRecord)} />,
+                ]}                
             >
                 {selectedRecord && (
                     <div>

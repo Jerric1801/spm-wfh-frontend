@@ -55,6 +55,15 @@ const fetchRequests = async (isSummary = false) => {
     }
   };
   
+const withdrawRequest = async (payload) => {
+    try {
+        const response = await api.post(`/manage-request/withdraw`, payload);
+        return response.data
+    } catch (error) {
+        console.error("Error withdrawing request", error);
+        return [];
+    }
+}
 
 const getPendingCount = async (payload) => { 
     try {
@@ -72,5 +81,6 @@ export {
     getPending,
     manageRequest,
     fetchRequests,
-    getPendingCount
+    getPendingCount,
+    withdrawRequest
 }
