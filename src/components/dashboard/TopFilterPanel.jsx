@@ -76,7 +76,6 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
         //console.log(WFHRange);
 
         let recurDayNums = [];
-        console.log(recurringDays);
 
         for (var day in recurringDays) {
             if (recurringDays[day] == true) {

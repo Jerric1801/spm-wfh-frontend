@@ -23,37 +23,26 @@ function TeamRequest() {
   { 'date': '2024-10-31', 'reason': 'Big boss meeting' },
   { 'date': '2024-11-11', 'reason': 'Big sale!' }];
 
-  const sampleDocuments = [
-    {
-        fileName: "Project_Report.pdf",
-        fileUrl: "https://example.com/documents/project_report.pdf"
-    },
-    {
-        fileName: "Meeting_Minutes.docx",
-        fileUrl: "https://example.com/documents/meeting_minutes.docx"
-    },
-    {
-        fileName: "Budget_Summary.xlsx",
-        fileUrl: "https://example.com/documents/budget_summary.xlsx"
-    }
-  ];
-
   useEffect(() => {
     const fetchData = async () => {
       const pendingRequests = await getPending();
       if (pendingRequests.data) {
-        setDataSource(pendingRequests.data);
+        // Format the documents to match the expected structure
+        const formattedRequests = pendingRequests.data.map(request => ({
+          ...request,
+          document: request.document.map(docUrl => ({ 
+            fileName: docUrl.split('/').pop(),
+            fileUrl: docUrl 
+          }))
+        }));
+        setDataSource(formattedRequests); 
       } else {
         console.log("No requests found")
       }
     };
 
-    // TODO: Fetch blackout dates from API
-
     fetchData();
-    // fetchBlackoutDates(); 
   }, []);
-
 
   const viewRequestDetails = (record) => {
     // console.log('View details for:', record);
@@ -134,9 +123,9 @@ function TeamRequest() {
   
       try {
         const payload = {
-          requestId: rowData.key, // Assuming 'id' holds the Request_ID
+          requestId: rowData.key, 
           action: 'approve',
-          managerReason: null, // No reason needed for approval
+          managerReason: null, 
         };
   
         const response = await manageRequest(payload);
@@ -239,7 +228,7 @@ function TeamRequest() {
             <p><strong>WFH Type:</strong> {selectedRecord.wfhType}</p>
             <p><strong>Reason:</strong> {selectedRecord.reason}</p>
             {/* <SupportingDocuments documents={selectedRecord.supportingDocuments} /> */}
-            <SupportingDocuments documents={sampleDocuments}/>
+            <SupportingDocuments documents={selectedRecord.document}/>
           </div>
         )}
       </Modal>
