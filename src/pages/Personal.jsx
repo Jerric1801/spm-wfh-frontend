@@ -155,11 +155,11 @@ function Personal() {
 
             {/* Short Summary on the right */}
             <div className="col-span-12 lg:col-span-3 row-span-11 bg-white p-8">
-    <h2 className="text-xl font-bold">Short Summary</h2>
-    <div className="mt-4">
-        <div className="flex justify-between items-center">
-            <p className="text-lg">Requests</p>
-            <p className="text-2xl font-bold">{totalRequests}</p>
+            <h2 className="text-xl font-bold">Short Summary</h2>
+            <div className="mt-4">
+            <div className="flex justify-between items-center">
+              <p className="text-lg">Requests</p>
+              <p className="text-2xl font-bold">{totalRequests}</p>
         </div>
         
         {/* Progress bar with segments */}
@@ -227,12 +227,12 @@ function Personal() {
 
             {/* Withdraw Modal */}
             <Modal
-             title={`Details on Request #${selectedRecord?.id}`}
-             open={isModalVisible}
-             onCancel={handleCloseModal}
+                title="Please enter your reason for withdrawal:"
+             open={isWithdrawModalVisible}
+                onCancel={() => setIsWithdrawModalVisible(false)}
              footer={[
-              <Button key="close" text="Close" color="bg-gray" onClick={handleCloseModal} />,
-              <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={() => handleWithdraw(selectedRecord)} />,
+              <Button key="cancel" text="Cancel" color="bg-gray" onClick={() => setIsWithdrawModalVisible(false)} />,
+              <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={handleWithdrawRequest} />,
            ]}
             >
                 <Input.TextArea
