@@ -227,13 +227,13 @@ function Personal() {
 
             {/* Withdraw Modal */}
             <Modal
-                title="Please enter your reason for withdrawal:"
-                open={isWithdrawModalVisible}
-                onCancel={() => setIsWithdrawModalVisible(false)}
-                footer={[
-                    <Button text="Cancel" color="bg-gray" onClick={() => setIsWithdrawModalVisible(false)} />,
-                    <Button text="Withdraw Request" color="bg-orange" onClick={handleWithdrawRequest} />,
-                ]}
+             title={`Details on Request #${selectedRecord?.id}`}
+             open={isModalVisible}
+             onCancel={handleCloseModal}
+             footer={[
+              <Button key="close" text="Close" color="bg-gray" onClick={handleCloseModal} />,
+              <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={() => handleWithdraw(selectedRecord)} />,
+           ]}
             >
                 <Input.TextArea
                     rows={4}
