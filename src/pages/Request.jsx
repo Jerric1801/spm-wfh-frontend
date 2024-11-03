@@ -30,12 +30,12 @@ function TeamRequest() {
         // Format the documents to match the expected structure
         const formattedRequests = pendingRequests.data.map(request => ({
           ...request,
-          document: request.document.map(docUrl => ({ 
+          document: request.document.map(docUrl => ({
             fileName: docUrl.split('/').pop(),
-            fileUrl: docUrl 
+            fileUrl: docUrl
           }))
         }));
-        setDataSource(formattedRequests); 
+        setDataSource(formattedRequests);
       } else {
         console.log("No requests found")
       }
@@ -85,6 +85,12 @@ function TeamRequest() {
       key: 'dateRange',
     },
     {
+      title: 'Recurring Days',
+      dataIndex: 'recurringDates',
+      key: 'recurringDates',
+      render: (recurringDates) => recurringDates.join(', ') ? recurringDates.join(', ') : 'N.A.' 
+    },
+    {
       title: 'WFH Type',
       dataIndex: 'wfhType',
       key: 'wfhType',
@@ -120,29 +126,29 @@ function TeamRequest() {
         Date Range: ${rowData.dateRange} 
         WFH Type: ${rowData.wfhType}
         Reason: ${rowData.reason}\n`)) {
-  
+
       try {
         const payload = {
-          requestId: rowData.key, 
+          requestId: rowData.key,
           action: 'approve',
-          managerReason: null, 
+          managerReason: null,
         };
-  
+
         const response = await manageRequest(payload);
-        console.log(response); 
+        console.log(response);
         alert('This request has been successfully approved!');
 
-        setDataSource(prevDataSource => 
+        setDataSource(prevDataSource =>
           prevDataSource.filter(record => record.key !== rowData.key)
         );
-  
+
       } catch (error) {
         console.error('Error approving request:', error);
         alert('There was an error in saving your request approval, please try again.');
       }
     }
   };
-  
+
   const rejectRequest = async (rowData) => {
     let rejReason = '';
     while (rejReason == '') {
@@ -153,7 +159,7 @@ function TeamRequest() {
         WFH Type: ${rowData.wfhType}
         Reason: ${rowData.reason}\n`);
     }
-  
+
     if (rejReason != null) {
       try {
         const payload = {
@@ -161,22 +167,22 @@ function TeamRequest() {
           action: 'reject',
           managerReason: rejReason,
         };
-  
+
         const response = await manageRequest(payload);
-        console.log(response); 
+        console.log(response);
         alert('This request has been successfully rejected!');
 
-        setDataSource(prevDataSource => 
+        setDataSource(prevDataSource =>
           prevDataSource.filter(record => record.key !== rowData.key)
         );
-  
+
       } catch (error) {
         console.error('Error rejecting request:', error);
         alert('There was an error in saving your request rejection, please try again.');
       }
     }
   };
-  
+
   return (
     <div className="grid grid-cols-12 grid-rows-12 gap-0 h-screen">
       {/* Top Profile Bar */}
@@ -184,7 +190,7 @@ function TeamRequest() {
         <TopProfileBar />
       </div>
       <div className="col-span-12 row-span-11 bg-gray-100 flex justify-center items-center">
-        <div className="w-[80%] h-[100%]" style={{ padding: '20px' }}>
+        <div className="w-[80%] h-[100%] overflow-auto" style={{ padding: '20px' }}>
           <span className="text-[30px] font-bold">Team's Pending Request</span>
           <br /><br />
           <Table columns={columns} dataSource={dataSource} />
@@ -225,10 +231,11 @@ function TeamRequest() {
             <p><strong>Request ID:</strong> {selectedRecord.key}</p>
             <p><strong>Member:</strong> {selectedRecord.member}</p>
             <p><strong>Date Range:</strong> {selectedRecord.dateRange}</p>
+            <p><strong>Recurring Days:</strong> {selectedRecord.recurringDates.length > 0 ? selectedRecord.recurringDates.join(', ') : 'N.A.'}</p>
             <p><strong>WFH Type:</strong> {selectedRecord.wfhType}</p>
             <p><strong>Reason:</strong> {selectedRecord.reason}</p>
             {/* <SupportingDocuments documents={selectedRecord.supportingDocuments} /> */}
-            <SupportingDocuments documents={selectedRecord.document}/>
+            <SupportingDocuments documents={selectedRecord.document} />
           </div>
         )}
       </Modal>

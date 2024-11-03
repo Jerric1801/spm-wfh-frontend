@@ -123,13 +123,12 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
 
                 applyWFH(payload)
 
-                console.log("payload",payload)
-
                 // TODO integration w endpoint
                 const status = true;
 
                 if (status) {
                     alert('WFH request successfully submitted!');
+                    window.location = "/request"
                 } else {
                     alert('There was an error in submitting your WFH request, please try again.');
                 }

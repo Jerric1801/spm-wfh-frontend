@@ -5,34 +5,41 @@ import { Input, Table, Modal } from 'antd';
 import Button from '../components/common/Button';
 import Tag from '../components/common/Tag';
 import ExpandButton from '../assets/images/expand.png';
-import { fetchRequests, withdrawRequest } from '../services/endpoints/manageRequests'
+import { fetchRequests, withdrawRequest } from '../services/endpoints/manageRequests';
+import SupportingDocuments from '../components/request/SupportingDocumentsModal'; // Import the SupportingDocuments component
 
 function Personal() {
-    const [dataSource, setDataSource] = useState([]); // Ensure it's initialized
+    const [dataSource, setDataSource] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
     const [withdrawReason, setWithdrawReason] = useState('');
-    const [isLoading, setIsLoading] = useState(true); // State to manage loading state
-
-    useEffect(() => {
-        const loadRequests = async () => {
-            const data = await fetchRequests();
-            setDataSource(data);
-        };
-
-        loadRequests();
-    }, []);
-
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await fetchRequests();
-                const dataWithKeys = response.map((record, index) => ({
-                    ...record,
-                    key: record.Request_ID 
-                }));
-                setDataSource(dataWithKeys); 
+                console.log(response);
+
+                // Assuming the API response includes document URLs in a field named 'documents'
+                // and recurring dates in a field named 'Recurring_Dates'
+                const dataWithKeys = response.map((record) => {
+                    // Process recurring dates
+                    const recurringDates = record.Recurring_Dates || [];
+                    const formattedRecurringDates = recurringDates.length > 0 ? recurringDates.join(', ') : 'N.A.';
+                    console.log(record.Documents)
+                    return {
+                        ...record,
+                        key: record.Request_ID,
+                        recurringDates: formattedRecurringDates, // Add recurring dates to the record
+                        document: record.Documents ? record.Documents.map(docUrl => ({
+                            fileName: docUrl.split('/').pop(),
+                            fileUrl: docUrl
+                        })) : []
+                    };
+                });
+
+                setDataSource(dataWithKeys);
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
@@ -43,6 +50,7 @@ function Personal() {
         fetchData();
     }, []);
 
+
     const viewRequestDetails = (record) => {
         setSelectedRecord(record);
         setIsModalVisible(true);
@@ -50,14 +58,14 @@ function Personal() {
 
     const handleCloseModal = () => {
         setIsModalVisible(false);
-        setIsWithdrawModalVisible(false)
+        setIsWithdrawModalVisible(false);
         setSelectedRecord(null);
     }
 
     const handleWithdraw = (record) => {
         if (record.status !== 'Withdrawn') {
             setSelectedRecord(record);
-            setIsWithdrawModalVisible(true); // Show the withdrawal modal
+            setIsWithdrawModalVisible(true);
         }
     };
 
@@ -74,39 +82,31 @@ function Personal() {
             return;
         }
 
-        // Prepare the payload with requestId and requestReason
         const payload = {
-            requestId: selectedRecord.Request_ID ,
+            requestId: selectedRecord.Request_ID,
             requestReason: withdrawReason,
         };
 
-        // Call the API to withdraw the request
         const response = await withdrawRequest(payload);
 
         if (response && response.message === 'Request withdrawn successfully') {
-            // Update the local state to reflect the change
             const updatedDataSource = dataSource.map((item) =>
-                item.id === selectedRecord.id ? { ...item, status: 'Withdrawn' } : item
+                item.Request_ID === selectedRecord.Request_ID ? { ...item, status: 'Withdrawn' } : item
             );
-
             setDataSource(updatedDataSource);
-            console.log('Withdrawing request:', selectedRecord);
-            console.log('Reason:', withdrawReason);
         } else {
             console.error('Failed to withdraw request:', response);
         }
 
-        // Close the modal after submission
         setIsWithdrawModalVisible(false);
         setSelectedRecord(null);
         setWithdrawReason('');
     };
 
-
     const columns = [
         {
             title: 'ID',
-            dataIndex: 'Request_ID', // Changed to Request_ID
+            dataIndex: 'Request_ID',
             key: 'Request_ID',
         },
         {
@@ -119,13 +119,19 @@ function Personal() {
             }
         },
         {
+            title: 'Recurring Days',
+            dataIndex: 'recurringDates',
+            key: 'recurringDates',
+        },
+
+        {
             title: 'WFH Type',
-            dataIndex: 'WFH_Type', // Changed to WFH_Type
+            dataIndex: 'WFH_Type',
             key: 'WFH_Type',
         },
         {
             title: 'Status',
-            dataIndex: 'Current_Status', // Changed to Current_Status
+            dataIndex: 'Current_Status',
             key: 'Current_Status',
             render: (status) => {
                 let color = '';
@@ -138,7 +144,7 @@ function Personal() {
         },
         {
             title: 'Reason',
-            dataIndex: 'Request_Reason', // Changed to Request_Reason
+            dataIndex: 'Request_Reason',
             key: 'Request_Reason',
         },
         {
@@ -191,7 +197,6 @@ function Personal() {
                         <p className="text-2xl font-bold">{totalRequests}</p>
                     </div>
 
-                    {/* Progress bar with segments */}
                     <div className="mt-4 w-full h-4 rounded-full overflow-hidden bg-gray-200">
                         <div
                             style={{ width: `${percentageByStatus('Approved')}%` }}
@@ -211,7 +216,6 @@ function Personal() {
                         ></div>
                     </div>
 
-                    {/* Percentage labels */}
                     <div className="mt-6">
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-green">Approved</span>
@@ -248,8 +252,9 @@ function Personal() {
                         <p><strong>Date Range:</strong> {new Date(selectedRecord.Start_Date).toLocaleDateString()} - {new Date(selectedRecord.End_Date).toLocaleDateString()}</p>
                         <p><strong>WFH Type:</strong> {selectedRecord.WFH_Type}</p>
                         <p><strong>Reason:</strong> {selectedRecord.Request_Reason}</p>
-                        {/* <SupportingDocuments documents={sampleDocuments} /> */}
+                        <p><strong>Recurring Days:</strong> {selectedRecord.recurringDates}</p>
                         <div><strong>Status:</strong> <Tag text={selectedRecord.Current_Status} color={selectedRecord.Current_Status === 'Approved' ? 'green' : selectedRecord.Current_Status === 'Pending' ? 'orange' : 'red'} /></div>
+                        <SupportingDocuments documents={selectedRecord.document} />
                     </div>
                 )}
             </Modal>
@@ -261,7 +266,7 @@ function Personal() {
                 onCancel={handleCloseModal}
                 footer={[
                     <Button key="close" text="Close" color="bg-gray" onClick={handleCloseModal} />,
-                    <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={() =>  handleWithdrawRequest()} />,
+                    <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={() => handleWithdrawRequest()} />,
                 ]}
             >
                 <Input.TextArea

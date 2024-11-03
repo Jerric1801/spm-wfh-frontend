@@ -9,7 +9,7 @@ const SupportingDocuments = ({ documents }) => {
                     {documents.map((doc, index) => (
                         <li key={index}>
                             <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                                {doc.fileName}
+                                {`Reason ${index + 1}`} {/* Replace with Reason 1, Reason 2, etc. */}
                             </a>
                             <a href={doc.fileUrl} download className="ml-2 text-gray-500 hover:text-gray-700">Download</a>
                         </li>

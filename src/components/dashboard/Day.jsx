@@ -94,6 +94,7 @@ function Day({ day, tags, requests, onSelect, selectedDateRange, onMouseOver }) 
                         case "Approved": color = "green"; break;
                         case "Pending": color = "orange"; break;
                         case "Rejected": color = "red"; break;
+                        case "Withdrawn": color = "blue"; break;
                     }
 
                     return (
