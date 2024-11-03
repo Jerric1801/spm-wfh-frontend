@@ -11,6 +11,7 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
     const [dragStarted, setDragStarted] = useState(false);
     const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 });
 
+    
     const days = daysInMonth.map((date) => {
         const matchingData = fetchParams.filteredData.find(item => isSameDay(new Date(item.date), date));
 
@@ -18,6 +19,15 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
             ? staffRequests.flatMap(request => {
                 const requestStartDate = new Date(request.Start_Date);
                 const requestEndDate = new Date(request.End_Date);
+
+                if (isSameDay(requestStartDate, requestEndDate)) {
+                    // If same day, check if it matches the current date
+                    if (isSameDay(requestStartDate, date)) {
+                        return [request]; 
+                    } else {
+                        return []; // Not the same day, so no request for this date
+                    }
+                }
 
                 // Check if there are recurring dates
                 if (request.Recurring_Dates && request.Recurring_Dates.length > 0) {

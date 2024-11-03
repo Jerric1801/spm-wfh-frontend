@@ -128,7 +128,7 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
 
                 if (status) {
                     alert('WFH request successfully submitted!');
-                    window.location = "/request"
+                    window.location = "/personal"
                 } else {
                     alert('There was an error in submitting your WFH request, please try again.');
                 }
