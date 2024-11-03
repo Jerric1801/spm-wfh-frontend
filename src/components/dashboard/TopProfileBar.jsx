@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import SettingsIcon from "../../assets/images/settings_icon.png";
+import { useNavigate } from 'react-router-dom'; 
+import LogoutIcon from '../../assets/images/logout_icon.png'; // Import your logout icon
 import NotificationSystem from '../../components/common/NotificationSystem.jsx'
 
 const flagDictionary = {
@@ -10,11 +11,10 @@ const flagDictionary = {
     'Malaysia': '🇲🇾'
 };
 
-
-
 function TopProfileBar() {
     const [staffName, setStaffName] = useState('');
     const [country, setCountry] = useState('');
+    const navigate = useNavigate(); // Hook for navigation
 
     useEffect(() => {
         // Get staff details from localStorage
@@ -23,7 +23,6 @@ function TopProfileBar() {
         setCountry(staffData.country || 'Unknown');
     }, []);
 
-    // Function to get initials from staffName
     const getInitials = (name) => {
         if (!name) return '';
         const nameParts = name.split(' ');
@@ -33,6 +32,16 @@ function TopProfileBar() {
         }
         return initials;
     };
+
+    const handleLogout = () => {
+        // 1. Clear localStorage (or your authentication storage)
+        localStorage.removeItem('staff'); // Or however you store user data
+        localStorage.removeItem('jwtToken'); // Remove the JWT token
+
+        // 2. Navigate to the login page (which is '/')
+        navigate('/'); 
+    };
+
     return (
         <div className="w-full h-full flex justify-between items-center px-5 py-3"> 
 
@@ -56,9 +65,13 @@ function TopProfileBar() {
                  <NotificationSystem/>
                 </div>
 
-                <button className="hover:bg-gray-100 p-2 rounded-full transition-colors">
-                 <img src={SettingsIcon} alt="Settings icon" className="mr-3 w-6" /> 
+                <button 
+                    className="hover:bg-gray-100 p-2 rounded-full transition-colors"
+                    onClick={handleLogout} 
+                >
+                    <img src={LogoutIcon} alt="Logout icon" className="mr-4 w-5" /> 
                 </button>
+
                 <div className="bg-gray-300 text-gray-800 rounded-full w-10 h-10 flex items-center justify-center font-bold mr-3"> 
                     {getInitials(staffName)}
                 </div>

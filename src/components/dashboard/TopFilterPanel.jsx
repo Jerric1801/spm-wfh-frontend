@@ -373,7 +373,7 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
                     </div>
                 </div>
                 <div className="w-[25%] h-[100%] flex flex-col justify-center items-center overflow-hidden">
-                    <Button text="Apply WFH" onClick={() => setShowModal(true)} />
+                    <Button text="Apply WFH" isSelected={true} onClick={() => setShowModal(true)} />
                     <div className="mt-3 border border-gray-300 rounded-[10px] p-3 font-bold ">
                         {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
                     </div>
