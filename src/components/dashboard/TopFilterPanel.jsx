@@ -1,13 +1,13 @@
 import Button from '../common/Button';
 import "../../assets/styles/applyWFHModal.css";
 import { useState, useEffect, useContext } from 'react';
-import { isSameDay, isBefore, setMinutes, setHours, format, startOfMonth, addDays, startOfDay, endOfDay, differenceInDays, set } from 'date-fns';
+import { isSameDay, isBefore, setMinutes, setHours, format, startOfMonth, addDays, startOfDay, endOfDay, differenceInDays } from 'date-fns';
 //import calendarData from '../../data/dashboard/calendar.json'
 import { ScheduleContext } from '../../context/ScheduleContext';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import WeekdayButton from '../applyWFH/WeekdayButton';
-import {applyWFH} from '../../services/endpoints/applyWFH'
+import { applyWFH } from '../../services/endpoints/applyWFH'
 //import FileUploadMultiple from '../applyWFH/UploadFiles';
 //import FileBase64 from 'react-file-base64';
 
@@ -93,7 +93,7 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
             if (recurDayNums.includes(currentDate.getDay())) {
                 dateArray.push(currentDate);
             }
-            currentDate = addDays(currentDate, 1);
+            currentDate = addDays(currentDate, 1); // Move to the next day in UTC
         }
 
         if (WFHType == '') {
@@ -109,11 +109,11 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
         if (error == 0) {
             if (confirm('Confirm submission of WFH request?')) {
                 const wfhTypeAbbreviation = {
-                    'Full Day (FD)': 'FD',
+                    'Full Day (FD)': 'WD',
                     'Morning only (AM)': 'AM',
                     'Afternoon only (PM)': 'PM',
                 }[WFHType];
-
+                console.log(dateArray)
                 const payload = {
                     Dates: dateArray,
                     WFHType: wfhTypeAbbreviation,
@@ -121,16 +121,15 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
                     Document: base64Files,
                 }
 
-                applyWFH(payload)
+                const res = await applyWFH(payload)
 
                 // TODO integration w endpoint
-                const status = true;
 
-                if (status) {
+                if (res.success) {
                     alert('WFH request successfully submitted!');
                     window.location = "/personal"
                 } else {
-                    alert('There was an error in submitting your WFH request, please try again.');
+                    alert(res.data.error);
                 }
 
             }
