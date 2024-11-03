@@ -153,29 +153,33 @@ function TeamRequest() {
     let rejReason = '';
     while (rejReason == '') {
       rejReason = prompt(`Please enter your reason for rejection. 
-        Request ID: ${rowData.key}
-        Team member: ${rowData.member} 
-        Date Range: ${rowData.dateRange} 
-        WFH Type: ${rowData.wfhType}
-        Reason: ${rowData.reason}\n`);
+          Request ID: ${rowData.key}
+          Team member: ${rowData.member} 
+          Date Range: ${rowData.dateRange} 
+          WFH Type: ${rowData.wfhType}
+          Reason: ${rowData.reason}\n`);
     }
-
+  
     if (rejReason != null) {
+      if (!confirm(`Are you sure you want to reject this request?\nReason: ${rejReason}`)) {
+        return; 
+      }
+  
       try {
         const payload = {
           requestId: rowData.key,
           action: 'reject',
           managerReason: rejReason,
         };
-
+  
         const response = await manageRequest(payload);
         console.log(response);
         alert('This request has been successfully rejected!');
-
+  
         setDataSource(prevDataSource =>
           prevDataSource.filter(record => record.key !== rowData.key)
         );
-
+  
       } catch (error) {
         console.error('Error rejecting request:', error);
         alert('There was an error in saving your request rejection, please try again.');
