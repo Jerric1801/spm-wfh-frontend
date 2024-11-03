@@ -88,10 +88,20 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
         }
 
         let dateArray = [];
-        let currentDate = WFHRange[0];
-        while (isBefore(currentDate, WFHRange[1])) { // small bug: when user doesnt select date range (auto today, isbefore doesnt work)
-            if (recurDayNums.includes(currentDate.getDay())) {
-                dateArray.push(currentDate);
+
+        // Set currentDate to the start of WFHRange or to "today" if WFHRange is missing
+        let currentDate = WFHRange[0]
+            ? new Date(Date.UTC(WFHRange[0].getUTCFullYear(), WFHRange[0].getUTCMonth(), WFHRange[0].getUTCDate()))
+            : new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
+        
+        // Set endDate to either the second date in WFHRange or default to currentDate if WFHRange has only one date
+        const endDate = WFHRange[1]
+            ? new Date(Date.UTC(WFHRange[1].getUTCFullYear(), WFHRange[1].getUTCMonth(), WFHRange[1].getUTCDate(), 23, 59, 59))
+            : new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate(), 23, 59, 59));
+        
+        while (isBefore(currentDate, addDays(endDate, 1))) { // Loop includes the end date till 23:59 UTC
+            if (recurDayNums.includes(currentDate.getUTCDay())) { // Use getUTCDay for day calculation in UTC
+                dateArray.push(new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate())));
             }
             currentDate = addDays(currentDate, 1); // Move to the next day in UTC
         }
