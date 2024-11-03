@@ -22,8 +22,8 @@ const AppRoutes = () => {
             if (token) {
                 const decodedToken = JSON.parse(atob(token.split('.')[1])); 
                 if (decodedToken.exp * 1000 < Date.now()) { 
-                    localStorage.removeItem('jwtToken'); 
-                    navigate('/login'); 
+                    localStorage.removeItem('token'); 
+                    navigate('/'); 
                     alert('Your session has expired. Please log in again.'); 
                 }
             }
