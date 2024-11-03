@@ -1,12 +1,12 @@
 //Dashboard Components
 import React, { useState, useEffect } from 'react';
 import TopProfileBar from '../components/dashboard/TopProfileBar';
-import { Input, Table, Modal } from 'antd';
+import { Input, Table, Modal, message } from 'antd';
 import Button from '../components/common/Button';
 import Tag from '../components/common/Tag';
 import ExpandButton from '../assets/images/expand.png';
 import { fetchRequests, withdrawRequest } from '../services/endpoints/manageRequests';
-import SupportingDocuments from '../components/request/SupportingDocumentsModal'; // Import the SupportingDocuments component
+import SupportingDocuments from '../components/request/SupportingDocumentsModal';
 
 function Personal() {
     const [dataSource, setDataSource] = useState([]);
@@ -15,23 +15,19 @@ function Personal() {
     const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
     const [withdrawReason, setWithdrawReason] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await fetchRequests();
-                console.log(response);
-
-                // Assuming the API response includes document URLs in a field named 'documents'
-                // and recurring dates in a field named 'Recurring_Dates'
                 const dataWithKeys = response.map((record) => {
                     // Process recurring dates
                     const recurringDates = record.Recurring_Dates || [];
                     const formattedRecurringDates = recurringDates.length > 0 ? recurringDates.join(', ') : 'N.A.';
-                    console.log(record.Documents)
                     return {
                         ...record,
                         key: record.Request_ID,
-                        recurringDates: formattedRecurringDates, // Add recurring dates to the record
+                        recurringDates: formattedRecurringDates,
                         document: record.Documents ? record.Documents.map(docUrl => ({
                             fileName: docUrl.split('/').pop(),
                             fileUrl: docUrl
@@ -60,21 +56,31 @@ function Personal() {
         setIsModalVisible(false);
         setIsWithdrawModalVisible(false);
         setSelectedRecord(null);
+        setWithdrawReason(''); // Clear the withdraw reason
     }
 
     const handleWithdraw = (record) => {
-        if (record.status !== 'Withdrawn') {
+        if (record.Current_Status === 'Withdrawn') {
+            message.error('This request has already been withdrawn.');
+        } else {
             setSelectedRecord(record);
             setIsWithdrawModalVisible(true);
         }
     };
 
     const totalRequests = dataSource.length;
-    const countByStatus = (status) => dataSource.filter(item => item.status === status).length;
+
+    const countByStatus = dataSource.reduce((acc, item) => {
+        acc[item.Current_Status] = (acc[item.Current_Status] || 0) + 1;
+        return acc;
+    }, {});
+
     const percentageByStatus = (status) => {
-        const percentage = ((countByStatus(status) / totalRequests) * 100).toFixed(0);
+        const count = countByStatus[status] || 0;
+        const percentage = ((count / totalRequests) * 100).toFixed(0);
         return `${percentage}`;
     };
+
 
     const handleWithdrawRequest = async () => {
         if (!selectedRecord) {
@@ -82,20 +88,27 @@ function Personal() {
             return;
         }
 
-        const payload = {
-            requestId: selectedRecord.Request_ID,
-            requestReason: withdrawReason,
-        };
+        try {
+            const payload = {
+                requestId: selectedRecord.Request_ID,
+                requestReason: withdrawReason,
+            };
 
-        const response = await withdrawRequest(payload);
+            const response = await withdrawRequest(payload);
 
-        if (response && response.message === 'Request withdrawn successfully') {
-            const updatedDataSource = dataSource.map((item) =>
-                item.Request_ID === selectedRecord.Request_ID ? { ...item, status: 'Withdrawn' } : item
-            );
-            setDataSource(updatedDataSource);
-        } else {
-            console.error('Failed to withdraw request:', response);
+            if (response && response.message === 'Request withdrawn successfully') {
+                const updatedDataSource = dataSource.map((item) =>
+                    item.Request_ID === selectedRecord.Request_ID ? { ...item, Current_Status: 'Withdrawn' } : item
+                );
+                setDataSource(updatedDataSource);
+                message.success('Request withdrawn successfully.');
+            } else {
+                console.error('Failed to withdraw request:', response);
+                message.error('Failed to withdraw request.');
+            }
+        } catch (error) {
+            console.error('Error withdrawing request:', error);
+            message.error('An error occurred while withdrawing the request.');
         }
 
         setIsWithdrawModalVisible(false);
@@ -154,11 +167,11 @@ function Personal() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
 
                     <Button text="Withdraw"
-                        color={record.status === 'Withdrawn' ? "bg-gray" : "bg-orange"}
+                        color={record.Current_Status === 'Withdrawn' ? "bg-gray" : "bg-orange"}
                         onClick={() => handleWithdraw(record)}
                         width="100px"
                         height="40px"
-                        disabled={record.status === 'Withdrawn'}
+                        disabled={record.Current_Status === 'Withdrawn'}
                     />
 
                     <img
@@ -204,7 +217,7 @@ function Personal() {
                         ></div>
                         <div
                             style={{ width: `${percentageByStatus('Pending')}%`, backgroundColor: '#FFA500' }}
-                            className="h-full"
+                            className="h-full bg-orange"
                         ></div>
                         <div
                             style={{ width: `${percentageByStatus('Rejected')}%` }}
@@ -212,7 +225,7 @@ function Personal() {
                         ></div>
                         <div
                             style={{ width: `${percentageByStatus('Withdrawn')}%` }}
-                            className="h-full bg-blue"
+                            className="h-full bg-blue-500"
                         ></div>
                     </div>
 
@@ -244,7 +257,6 @@ function Personal() {
                 onCancel={handleCloseModal}
                 footer={[
                     <Button key="close" text="Close" color="bg-gray" onClick={handleCloseModal} />,
-                    <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={() => handleWithdrawRequest()} />,
                 ]}
             >
                 {selectedRecord && (
@@ -261,19 +273,19 @@ function Personal() {
 
             {/* Withdraw Modal */}
             <Modal
-                title={`Details on Request #${selectedRecord?.Request_ID}`}
+                title="Withdraw Request"
                 open={isWithdrawModalVisible}
                 onCancel={handleCloseModal}
                 footer={[
                     <Button key="close" text="Close" color="bg-gray" onClick={handleCloseModal} />,
-                    <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={() => handleWithdrawRequest()} />,
+                    <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={handleWithdrawRequest} />,
                 ]}
             >
                 <Input.TextArea
                     rows={4}
                     value={withdrawReason}
                     onChange={(e) => setWithdrawReason(e.target.value)}
-                    placeholder="Enter your reason here..."
+                    placeholder="Enter your reason for withdrawing..."
                 />
             </Modal>
         </div>
