@@ -1,157 +1,206 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Check, X } from 'lucide-react';
-import { cn } from '../../utils/tailwindUtils';
-import { fetchRequests } from '../../services/endpoints/manageRequests';
+import { getNotifications, acceptNotifications } from '../../services/endpoints/notifications';
 
-// const fetchNotifications = () => {
-//   return Promise.resolve([
-//     {
-//       id: 1,
-//       status: 'Approved',
-//       date: '28/10-29/10',
-//       type: 'WFH FULL DAY',
-//       timestamp: '2 min ago'
-//     },
-//     {
-//       id: 2,
-//       status: 'Approved',
-//       date: '15/09-16/09',
-//       type: 'WFH FULL DAY',
-//       timestamp: '2 hours ago'
-//     },
-//     {
-//       id: 3,
-//       status: 'Rejected',
-//       date: '9/09-13/09',
-//       type: 'WFH PM',
-//       timestamp: '2 hours ago'
-//     },
-//     {
-//       id: 4,
-//       status: 'Approved',
-//       date: '08/09',
-//       type: 'WFH AM',
-//       timestamp: '2 days ago'
-//     },
-//     {
-//       id: 5,
-//       status: 'Approved',
-//       date: '05/09-07/09',
-//       type: 'WFH PM',
-//       timestamp: '2 days ago'
-//     }
-//   ]);
-// };
+const NotificationSystem = () => {
+    const [notifications, setNotifications] = useState([]);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [hasUnread, setHasUnread] = useState(false);
+    const [lastChecked, setLastChecked] = useState(Date.now());
 
-const NotificationSystem = ({ userRole }) => {
-  const [notifications, setNotifications] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [hasUnread, setHasUnread] = useState(false);
-  const [lastChecked, setLastChecked] = useState(Date.now());
+    // Function to convert date to YYYY-MM-DD format
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0]; // Extract only the YYYY-MM-DD part
+    };
 
-  useEffect(() => {
     // Function to fetch notifications
-    const getNotifications = async () => {
-      try {
-        const data = await fetchRequests(true); // Assuming `true` indicates summary data for notifications
-        setNotifications(data);
+    const fetchNotifications = async () => {
+        console.log('💻 API: getNotifications called'); // Log when the API is called
+        try {
+            const res = await getNotifications();
+            console.log('📨 Notifications API Response:', res); // Log the API response
 
-        // Check for new notifications since last check
-        const hasNew = data.some(notification =>
-          new Date(notification.timestamp) > new Date(lastChecked)
-        );
-        setHasUnread(hasNew);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
-      }
+            let parsedNotifications = [];
+
+            // Parse manager notifications
+            if (res.data.manager) {
+                parsedNotifications = parsedNotifications.concat(
+                    res.data.manager.map(notification => ({
+                        id: notification.requestId,
+                        status: notification.currentStatus === 'Pending' ? 'Pending' : 'Withdrawn',
+                        type: 'Manager Notification',
+                        earliestDate: formatDate(notification.earliestDate), // Format the date
+                        latestDate: formatDate(notification.latestDate), // Format the date
+                    }))
+                );
+            }
+
+            // Parse user notifications
+            if (res.data.user) {
+                parsedNotifications = parsedNotifications.concat(
+                    res.data.user.map(notification => ({
+                        id: notification.requestId,
+                        status: notification.currentStatus,
+                        type: 'User Notification',
+                        earliestDate: formatDate(notification.earliestDate), // Format the date
+                        latestDate: formatDate(notification.latestDate), // Format the date
+                    }))
+                );
+            }
+
+            setNotifications(parsedNotifications);
+            console.log('🔔 Parsed Notifications:', parsedNotifications); // Log parsed notifications
+
+            // Check for new notifications since the last check
+            const hasNew = parsedNotifications.some(notification =>
+                new Date(notification.timestamp) > new Date(lastChecked)
+            );
+            setHasUnread(hasNew);
+
+        } catch (error) {
+            console.error('❌ Error fetching notifications:', error);
+        }
     };
 
-    // Initial call to fetch notifications
-    getNotifications();
+    useEffect(() => {
+        // Initial fetch of notifications
+        fetchNotifications();
 
-    // Poll for new notifications every minute -> cron job
-    const interval = setInterval(getNotifications, 60000);
-    return () => clearInterval(interval);
-  }, [lastChecked]);
+        // Poll for new notifications every minute
+        const interval = setInterval(fetchNotifications, 60000);
+        return () => clearInterval(interval);
+    }, [lastChecked]);
 
-  const handleNotificationClick = () => {
-    setShowNotifications(!showNotifications);
-    if (showNotifications === false) {
-      setHasUnread(false);
-      setLastChecked(Date.now());
-    }
-  };
-
-  // Close notifications when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showNotifications && !event.target.closest('.notification-container')) {
-        setShowNotifications(false);
-      }
+    const handleNotificationClick = () => {
+        setShowNotifications(!showNotifications);
+        if (showNotifications === false) {
+            setHasUnread(false);
+            setLastChecked(Date.now());
+        }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showNotifications]);
+    // Function to clear notifications
+    const clearNotifications = async () => {
+        const notificationIds = notifications.map(notification => notification.id);
+        console.log(notificationIds)
+        try {
+            console.log('🚀 Clearing Notifications with IDs:', notificationIds);
+            const response = await acceptNotifications({ requestIdArr: notificationIds });
+            console.log('✅ Notifications cleared response:', response);
+            setNotifications([]); // Clear notifications from state
+            setHasUnread(false);
+        } catch (error) {
+            console.error('❌ Error clearing notifications:', error);
+        }
+    };
 
-  return (
-    <div className="relative notification-container">
-      {/* Notification Icon with Badge */}
-      <button 
-        onClick={handleNotificationClick}
-        className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
-      >
-        <Bell className="w-6 h-6 text-gray-600" />
-        {hasUnread && (
-          <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full" />
-        )}
-      </button>
+    // Close notifications when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (showNotifications && !event.target.closest('.notification-container')) {
+                setShowNotifications(false);
+            }
+        };
 
-      {/* Notification Popup */}
-      {showNotifications && (
-        <div className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto rounded-lg shadow-lg z-50 bg-white border border-gray-200">
-          <div className="p-4">
-            <h3 className="font-semibold mb-4">Notifications This Week</h3>
-            <div className="space-y-3">
-              {notifications.map((notification) => (
-                <div
-                key={notification.id}
-                className={`p-3 rounded-lg ${
-                  notification.status === 'Approved' 
-                    ? 'bg-light-green'
-                    : 'bg-light-red'
-              }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {notification.status === 'Approved' ? (
-                        <Check className="w-4 h-4 text-green-600" />
-                      ) : (
-                        <X className="w-4 h-4 text-red-600" />
-                      )}
-                      <span className={`font-medium ${
-                        notification.status === 'Approved'
-                          ? 'text-green'
-                          : 'text-red'
-                      }`}>
-                        {notification.status}
-                      </span>
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showNotifications]);
+
+    // Aggregate pending and withdrawn notifications
+    const pendingCount = notifications.filter(n => n.status === 'Pending').length;
+    const withdrawnCount = notifications.filter(n => n.status === 'Withdrawn').length;
+
+    return (
+        <div className="relative notification-container">
+            {/* Notification Icon with Badge */}
+            <button
+                onClick={handleNotificationClick}
+                className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+                <Bell className="w-6 h-6 text-gray-600" />
+                {hasUnread && (
+                    <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full" />
+                )}
+            </button>
+
+            {/* Notification Popup */}
+            {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto rounded-lg shadow-lg z-50 bg-white border border-gray-200">
+                    <div className="p-4">
+                        <h3 className="font-semibold mb-4">Notifications This Week</h3>
+                        <div className="space-y-3">
+                            {notifications.length > 0 ? (
+                                <>
+                                    {pendingCount > 0 && (
+                                        <div className="p-3 rounded-lg bg-yellow-100">
+                                            <div className="flex items-center gap-2">
+                                                <Bell className="w-4 h-4 text-yellow-700" />
+                                                <span className="font-medium text-yellow-700">
+                                                    {pendingCount} Pending Requests
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {withdrawnCount > 0 && (
+                                        <div className="p-3 rounded-lg bg-blue-100">
+                                            <div className="flex items-center gap-2">
+                                                <Bell className="w-4 h-4 text-blue-700" />
+                                                <span className="font-medium text-blue-700">
+                                                    {withdrawnCount} Withdrawn Requests
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {notifications.filter(n => n.status !== 'Pending' && n.status !== 'Withdrawn').map((notification) => (
+                                        <div
+                                            key={notification.id}
+                                            className={`p-3 rounded-lg ${
+                                                notification.status === 'Approved'
+                                                    ? 'bg-green-100'
+                                                    : 'bg-red-100'
+                                            }`}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    {notification.status === 'Approved' ? (
+                                                        <Check className="w-4 h-4 text-green-600" />
+                                                    ) : (
+                                                        <X className="w-4 h-4 text-red-600" />
+                                                    )}
+                                                    <span
+                                                        className={`font-medium ${
+                                                            notification.status === 'Approved'
+                                                                ? 'text-green-600'
+                                                                : 'text-red-600'
+                                                        }`}
+                                                    >
+                                                        {notification.status}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="text-sm text-gray-600 mt-1">
+                                                {notification.earliestDate} to {notification.latestDate}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {/* Clear Notifications Button */}
+                                    <button
+                                        onClick={clearNotifications}
+                                        className="mt-4 w-full border border-red text-red py-2 rounded-lg hover:bg-red-100 transition-colors"
+                                    >
+                                        Clear Notifications
+                                    </button>
+                                </>
+                            ) : (
+                                <p className="text-gray-500">No new notifications</p>
+                            )}
+                        </div>
                     </div>
-                    <span className="text-xs text-gray-500">
-                      {notification.timestamp}
-                    </span>
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">
-                    {notification.date}: {notification.type}
-                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default NotificationSystem;
