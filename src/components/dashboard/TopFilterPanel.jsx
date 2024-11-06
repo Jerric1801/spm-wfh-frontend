@@ -1,40 +1,62 @@
 import Button from '../common/Button';
 import "../../assets/styles/applyWFHModal.css";
 import { useState, useEffect, useContext } from 'react';
-import { isSameDay, isBefore, setMinutes, setHours, format, startOfMonth } from 'date-fns';
-import calendarData from '../../data/dashboard/calendar.json'
+import { isSameDay, isBefore, setMinutes, setHours, format, startOfMonth, addDays, startOfDay, endOfDay, differenceInDays } from 'date-fns';
+//import calendarData from '../../data/dashboard/calendar.json'
 import { ScheduleContext } from '../../context/ScheduleContext';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import WeekdayButton from '../applyWFH/WeekdayButton';
+import { applyWFH } from '../../services/endpoints/applyWFH'
+//import FileUploadMultiple from '../applyWFH/UploadFiles';
+//import FileBase64 from 'react-file-base64';
 
 function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Date(), endDate = new Date() }) {
     const { setCurrentMonth, fetchParams } = useContext(ScheduleContext);
     const [showModal, setShowModal] = useState(false);
     const [showCalen, setShowCalen] = useState(false);
     const [modalDateRange, setModalDateRange] = useState(`${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`);
+    const [recurringDays, setrecurringDays] = useState({
+        'M': false,
+        'Tu': false,
+        'W': false,
+        'Th': false,
+        'F': false,
+        'Sa': false,
+        'Su': false,
+    })
+    const dayNum = {
+        'M': 1,
+        'Tu': 2,
+        'W': 3,
+        'Th': 4,
+        'F': 5,
+        'Sa': 6,
+        'Su': 0,
+    }
+    const numToDay = {
+        1: 'M',
+        2: 'Tu',
+        3: 'W',
+        4: 'Th',
+        5: 'F',
+        6: 'Sa',
+        0: 'Su',
+    }
 
-    const [WFHRange, setWFHRange] = useState([new Date(), new Date()]);
+
+    const [WFHRange, setWFHRange] = useState([startOfDay(new Date()), endOfDay(new Date())]);
     const [WFHType, setWFHType] = useState('');
     const [WFHReason, setWFHReason] = useState('');
+    const [fileList, setFileList] = useState([]); // file list
+    const [base64Files, setBase64Files] = useState([]);
 
-    const sendRequest = (event) => {
+    const sendRequest = async (event) => {
         event.preventDefault();
         let error = 0;
-
-        /*
-        if (WFHRange==[0,0]){
-            alert('Please select WFH date range!');
-            error +=1;
-        }else{*/
         const today = new Date();
-        /*
-        console.log(today);
-        console.log(isBefore(WFHRange[0],today));
-        //console.log(isBefore(WFHRange[1],today));
-        console.log('isSameDay');
-        console.log(isSameDay(WFHRange[0],today));
-        */
-        if (isSameDay(WFHRange[0], today)) {
+
+        if (isSameDay(WFHRange[0], today)) { // handle AM apply PM WFH special case
             // check if now is AM
             const todayNoon = setMinutes(setHours(new Date(), 12), 0);
             if (!(isBefore(today, todayNoon) && WFHType == 'Afternoon only (PM)')) {
@@ -46,11 +68,43 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
 
         }
         else if (isBefore(WFHRange[0], today)) { //if before today 
-            // TODO handle AM book for PM clause
             alert('Please ensure the date range starts AFTER today');
             error += 1;
         }
         //}
+
+        //console.log(WFHRange);
+
+        let recurDayNums = [];
+
+        for (var day in recurringDays) {
+            if (recurringDays[day] == true) {
+                recurDayNums.push(dayNum[day]);
+            }
+        }
+        if (recurDayNums.length == 0) {
+            alert('Please select at least one day in a week.');
+            error += 1;
+        }
+
+        let dateArray = [];
+
+        // Set currentDate to the start of WFHRange or to "today" if WFHRange is missing
+        let currentDate = WFHRange[0]
+            ? new Date(Date.UTC(WFHRange[0].getUTCFullYear(), WFHRange[0].getUTCMonth(), WFHRange[0].getUTCDate()))
+            : new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
+        
+        // Set endDate to either the second date in WFHRange or default to currentDate if WFHRange has only one date
+        const endDate = WFHRange[1]
+            ? new Date(Date.UTC(WFHRange[1].getUTCFullYear(), WFHRange[1].getUTCMonth(), WFHRange[1].getUTCDate(), 23, 59, 59))
+            : new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate(), 23, 59, 59));
+        
+        while (isBefore(currentDate, addDays(endDate, 1))) { // Loop includes the end date till 23:59 UTC
+            if (recurDayNums.includes(currentDate.getUTCDay())) { // Use getUTCDay for day calculation in UTC
+                dateArray.push(new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate())));
+            }
+            currentDate = addDays(currentDate, 1); // Move to the next day in UTC
+        }
 
         if (WFHType == '') {
             alert('Please select WFH type!');
@@ -61,19 +115,31 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
             error += 1;
         }
 
+
         if (error == 0) {
             if (confirm('Confirm submission of WFH request?')) {
-                // TODO send request to backend and fetch status
-                // employee JWT
-                // range,WFHType, WFHReason
+                const wfhTypeAbbreviation = {
+                    'Full Day (FD)': 'WD',
+                    'Morning only (AM)': 'AM',
+                    'Afternoon only (PM)': 'PM',
+                }[WFHType];
+                console.log(dateArray)
+                const payload = {
+                    Dates: dateArray,
+                    WFHType: wfhTypeAbbreviation,
+                    WFHReason: WFHReason,
+                    Document: base64Files,
+                }
 
-                // return status success/failure to inform user
-                const status = true;
+                const res = await applyWFH(payload)
 
-                if (status) {
+                // TODO integration w endpoint
+
+                if (res.success) {
                     alert('WFH request successfully submitted!');
+                    window.location = "/personal"
                 } else {
-                    alert('There was an error in submitting your WFH request, please try again.');
+                    alert(res.data.error);
                 }
 
             }
@@ -83,12 +149,79 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
 
     useEffect(() => {
         setModalDateRange(`${WFHRange[0].toLocaleDateString()} to ${WFHRange[1].toLocaleDateString()}`);
+        if (differenceInDays(WFHRange[0], WFHRange[1]) < 7) {
+            console.log('disabling some day buttons...');
+            // check which days to disable
+            let disableVar = {
+                'M': true,
+                'Tu': true,
+                'W': true,
+                'Th': true,
+                'F': true,
+                'Sa': true,
+                'Su': true,
+            };
+            let currentDate = WFHRange[0];
+            while (isBefore(currentDate, WFHRange[1])) { // small bug: when user doesnt select date range (auto today, isbefore doesnt work)
+                disableVar[numToDay[currentDate.getDay()]] = false;
+                currentDate = addDays(currentDate, 1);
+            }
+            console.log(disableVar)
+            setButtonDisabled(disableVar);
+
+        }
     }, [WFHRange]);
+
+
+
+    const [buttonDisabled, setButtonDisabled] = useState({
+        'M': false,
+        'Tu': false,
+        'W': false,
+        'Th': false,
+        'F': false,
+        'Sa': false,
+        'Su': false,
+    });
+
+    const handleFileChange = (e) => { // one step late
+        const files = Array.from(e.target.files);
+        setFileList(files);
+
+        const fileReaders = [];
+        const base64Array = [];
+
+        files.forEach((file, index) => {
+            const reader = new FileReader();
+            fileReaders.push(reader);
+            reader.onload = (event) => {
+                base64Array.push(event.target.result);
+
+                // Check if all files are processed
+                if (base64Array.length === files.length) {
+                    setBase64Files(base64Array);
+                }
+            };
+
+            reader.readAsDataURL(file);
+        });
+    }
+
+    useEffect(() => {
+        console.log(base64Files);
+    }, [base64Files]);
+
+    useEffect(() => {
+        console.log(fileList);
+    }, [fileList]);
+
+
 
 
     const handleCalenButton = (e) => {
         e.preventDefault();
         setShowCalen(!showCalen);
+
     }
 
     const handleMonthChange = (direction) => {
@@ -249,7 +382,7 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
                     </div>
                 </div>
                 <div className="w-[25%] h-[100%] flex flex-col justify-center items-center overflow-hidden">
-                    <Button text="Apply WFH" onClick={() => setShowModal(true)} />
+                    <Button text="Apply WFH" isSelected={true} onClick={() => setShowModal(true)} />
                     <div className="mt-3 border border-gray-300 rounded-[10px] p-3 font-bold ">
                         {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
                     </div>
@@ -257,69 +390,95 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
             </div>
 
             {showModal && (
-                <div className="modal">
-                    <div onClick={() => setShowModal(false)} className="overlay"></div>
-                    <div className="modal-content flex flex-col justify-center">
-                        <div className="text-center">
-                            <span className="w-full text-[30px] font-bold">Apply for WFH</span>
+                <div className="modal fixed inset-0 z-50 flex">
+                    <div onClick={() => setShowModal(false)} className="overlay absolute inset-0 bg-black opacity-50"></div>
+                    <div className="modal-content bg-white p-8 w-[40vw] md:w-[40vw] lg:w-[32vw] relative overflow-auto ">
+                        <div className="text-center mb-6">
+                            <span className="w-full text-3xl font-bold">Apply for WFH</span>
                         </div>
-                        <br />
-                        <br />
-                        <form onSubmit={sendRequest}>
-                            <div className="flex">
 
-                                <div className="flex flex-col" style={{ marginInline: '15px' }}>
-                                    <div className="h-[10px]"></div>
-                                    <span className="text-[20px] font-bold">Date Range</span>
-                                    <br />
-                                    <br />
-                                    <br />
-                                    <span className="text-[20px] font-bold">WFH Type</span>
-                                    <br />
-                                    <br />
-                                    <br />
-                                    <span className="text-[20px] font-bold">Reason</span>
+                        <form className="flex flex-col">
+                            {/* Removed md:flex-row */}
 
-                                </div>
-
-                                <div className="flex flex-col w-[60%]">
-                                    <Button color="bg-green" onClick={(e) => handleCalenButton(e)} text={modalDateRange}></Button>
-
-                                    <div className="col-span-9 row-span-9 shadow-md">
-                                        {showCalen && <Calendar style={{ zIndex: '100001', position: 'absolute', top: '100%', left: '0' }}
+                            <div className="mb-4">
+                                <span className="text-xl font-bold">Date Range</span>
+                                <div className="mt-2 relative"> {/* Added spacing and relative positioning */}
+                                    <Button
+                                        color=""
+                                        onClick={(e) => handleCalenButton(e)}
+                                        text={modalDateRange}
+                                    />
+                                    {showCalen && (
+                                        <Calendar
+                                            style={{ zIndex: '100001', position: 'absolute', top: '100%', left: '0' }}
                                             selectRange={true}
                                             onChange={setWFHRange}
                                         />
-                                        }
-                                    </div>
+                                    )}
+                                </div>
+                            </div>
 
-                                    <br />
-                                    <br />
-                                    <select className="rounded-[10px] h-[50px] font-bold border-2" style={{ padding: '10px' }} value={WFHType} onChange={(e) => setWFHType(e.target.value)}>
+                            <div className="mb-4">
+                                <span className="text-xl font-bold">Days of the Week</span>
+                                <div className="mt-2 flex"> {/* Added spacing */}
+                                    {['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'].map((day) => (
+                                        <WeekdayButton
+                                            key={day}
+                                            weekday={day}
+                                            setrecurringDays={setrecurringDays}
+                                            disabled={buttonDisabled[day]}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="mb-4">
+                                <span className="text-xl font-bold">WFH Type</span>
+                                <div className="mt-2"> {/* Added spacing */}
+                                    <select
+                                        className="rounded-md h-12 font-bold border-2 px-4 py-2 w-full"
+                                        value={WFHType}
+                                        onChange={(e) => setWFHType(e.target.value)}
+                                    >
                                         <option selected></option>
                                         <option>Full Day (FD)</option>
                                         <option>Morning only (AM)</option>
                                         <option>Afternoon only (PM)</option>
                                     </select>
-                                    <br />
-                                    <br />
-                                    <textarea className="w-[250px] h-[150px] rounded-[10px]" style={{ padding: '10px' }} value={WFHReason} onChange={(e) => setWFHReason(e.target.value)}></textarea>
-
-
                                 </div>
                             </div>
 
-                            <br />
-                            <br />
-
-
-                            <div className="center-div">
-                                <Button text="Send Request" color="bg-green text-white" onClick={() => sendRequest()} />
-                                <br />
-                                <br />
-                                <Button text="x Close" color="bg-tag-grey-dark text-white" onClick={() => setShowModal(false)} />
+                            <div className="mb-4">
+                                <span className="text-xl font-bold">Reason</span>
+                                <div className="mt-2"> {/* Added spacing */}
+                                    <textarea
+                                        className="w-full h-40 rounded-md border-2 p-2"
+                                        value={WFHReason}
+                                        onChange={(e) => setWFHReason(e.target.value)}
+                                    ></textarea>
+                                </div>
                             </div>
-                            <br />
+
+                            <div>
+                                <span className="text-xl font-bold">Attach Files</span>
+                                <div className="mt-2"> {/* Added spacing */}
+                                    <input type='file' multiple onChange={handleFileChange} />
+                                </div>
+                            </div>
+
+                            <div className="mt-8 flex justify-center">
+                                <Button
+                                    text="Send Request"
+                                    color="bg-green text-white"
+                                    onClick={(event) => sendRequest(event)}
+                                    className="mr-4"
+                                />
+                                <Button
+                                    text="x Close"
+                                    color="bg-tag-grey-dark text-white"
+                                    onClick={() => setShowModal(false)}
+                                />
+                            </div>
                         </form>
                     </div>
                 </div>

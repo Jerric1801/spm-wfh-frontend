@@ -69,7 +69,7 @@ function Login() {
         });
 
         if (response.success) {
-            navigate('/')
+            navigate('/dashboard')
         }
         else {
             setIsLoading(false)

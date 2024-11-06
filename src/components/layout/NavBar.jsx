@@ -12,12 +12,12 @@ function NavBar() {
 
   return (
     <div className="w-[100%] h-[100%] flex flex-col gap-[40px]" style={{ paddingTop: '20px' }}>
-      <a href="/">
+      <a href="/dashboard">
         <img src={CompanyLogo} alt="Company logo" style={{ width: '40px', margin: 'auto' }} />
       </a>
-      <a href="/" className={location.pathname === '/' ? 'active-link' : ''}>
+      <a href="/dashboard" className={location.pathname === '/dashboard' ? 'active-link' : ''}>
         <img 
-          src={location.pathname === '/' ? DashboardActiveIcon : DashboardIcon} 
+          src={location.pathname === '/dashboard' ? DashboardActiveIcon : DashboardIcon} 
           alt="Dashboard icon" 
           style={{ width: '40px', margin: 'auto', padding: '10px' }} 
         />

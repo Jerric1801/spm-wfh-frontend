@@ -54,5 +54,4 @@ class API {
 }
 
 const api = new API().getInstance();
-console.log(api)
 export default api;

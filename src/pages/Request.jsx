@@ -7,6 +7,7 @@ import Button from '../components/common/Button';
 import ExpandButton from '../assets/images/expand.png';
 import { isSameDay } from 'date-fns';
 import { getPending, manageRequest } from '../services/endpoints/manageRequests';
+import SupportingDocuments from '../components/request/SupportingDocumentsModal';
 
 //140008
 //151408 Phillip Lee
@@ -22,23 +23,26 @@ function TeamRequest() {
   { 'date': '2024-10-31', 'reason': 'Big boss meeting' },
   { 'date': '2024-11-11', 'reason': 'Big sale!' }];
 
-
   useEffect(() => {
     const fetchData = async () => {
       const pendingRequests = await getPending();
       if (pendingRequests.data) {
-        setDataSource(pendingRequests.data);
+        // Format the documents to match the expected structure
+        const formattedRequests = pendingRequests.data.map(request => ({
+          ...request,
+          document: request.document.map(docUrl => ({
+            fileName: docUrl.split('/').pop(),
+            fileUrl: docUrl
+          }))
+        }));
+        setDataSource(formattedRequests);
       } else {
         console.log("No requests found")
       }
     };
 
-    // TODO: Fetch blackout dates from API
-
     fetchData();
-    // fetchBlackoutDates(); 
   }, []);
-
 
   const viewRequestDetails = (record) => {
     // console.log('View details for:', record);
@@ -81,6 +85,12 @@ function TeamRequest() {
       key: 'dateRange',
     },
     {
+      title: 'Recurring Days',
+      dataIndex: 'recurringDates',
+      key: 'recurringDates',
+      render: (recurringDates) => recurringDates.join(', ') ? recurringDates.join(', ') : 'N.A.' 
+    },
+    {
       title: 'WFH Type',
       dataIndex: 'wfhType',
       key: 'wfhType',
@@ -116,41 +126,45 @@ function TeamRequest() {
         Date Range: ${rowData.dateRange} 
         WFH Type: ${rowData.wfhType}
         Reason: ${rowData.reason}\n`)) {
-  
+
       try {
         const payload = {
-          requestId: rowData.key, // Assuming 'id' holds the Request_ID
+          requestId: rowData.key,
           action: 'approve',
-          managerReason: null, // No reason needed for approval
+          managerReason: null,
         };
-  
+
         const response = await manageRequest(payload);
-        console.log(response); 
+        console.log(response);
         alert('This request has been successfully approved!');
 
-        setDataSource(prevDataSource => 
+        setDataSource(prevDataSource =>
           prevDataSource.filter(record => record.key !== rowData.key)
         );
-  
+
       } catch (error) {
         console.error('Error approving request:', error);
         alert('There was an error in saving your request approval, please try again.');
       }
     }
   };
-  
+
   const rejectRequest = async (rowData) => {
     let rejReason = '';
     while (rejReason == '') {
       rejReason = prompt(`Please enter your reason for rejection. 
-        Request ID: ${rowData.key}
-        Team member: ${rowData.member} 
-        Date Range: ${rowData.dateRange} 
-        WFH Type: ${rowData.wfhType}
-        Reason: ${rowData.reason}\n`);
+          Request ID: ${rowData.key}
+          Team member: ${rowData.member} 
+          Date Range: ${rowData.dateRange} 
+          WFH Type: ${rowData.wfhType}
+          Reason: ${rowData.reason}\n`);
     }
   
     if (rejReason != null) {
+      if (!confirm(`Are you sure you want to reject this request?\nReason: ${rejReason}`)) {
+        return; 
+      }
+  
       try {
         const payload = {
           requestId: rowData.key,
@@ -159,10 +173,10 @@ function TeamRequest() {
         };
   
         const response = await manageRequest(payload);
-        console.log(response); 
+        console.log(response);
         alert('This request has been successfully rejected!');
-
-        setDataSource(prevDataSource => 
+  
+        setDataSource(prevDataSource =>
           prevDataSource.filter(record => record.key !== rowData.key)
         );
   
@@ -172,7 +186,7 @@ function TeamRequest() {
       }
     }
   };
-  
+
   return (
     <div className="grid grid-cols-12 grid-rows-12 gap-0 h-screen">
       {/* Top Profile Bar */}
@@ -180,7 +194,7 @@ function TeamRequest() {
         <TopProfileBar />
       </div>
       <div className="col-span-12 row-span-11 bg-gray-100 flex justify-center items-center">
-        <div className="w-[80%] h-[100%]" style={{ padding: '20px' }}>
+        <div className="w-[80%] h-[100%] overflow-auto" style={{ padding: '20px' }}>
           <span className="text-[30px] font-bold">Team's Pending Request</span>
           <br /><br />
           <Table columns={columns} dataSource={dataSource} />
@@ -221,9 +235,11 @@ function TeamRequest() {
             <p><strong>Request ID:</strong> {selectedRecord.key}</p>
             <p><strong>Member:</strong> {selectedRecord.member}</p>
             <p><strong>Date Range:</strong> {selectedRecord.dateRange}</p>
+            <p><strong>Recurring Days:</strong> {selectedRecord.recurringDates.length > 0 ? selectedRecord.recurringDates.join(', ') : 'N.A.'}</p>
             <p><strong>WFH Type:</strong> {selectedRecord.wfhType}</p>
             <p><strong>Reason:</strong> {selectedRecord.reason}</p>
-
+            {/* <SupportingDocuments documents={selectedRecord.supportingDocuments} /> */}
+            <SupportingDocuments documents={selectedRecord.document} />
           </div>
         )}
       </Modal>

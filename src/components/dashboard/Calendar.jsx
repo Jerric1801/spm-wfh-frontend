@@ -4,15 +4,58 @@ import Day from './Day'
 import { ScheduleContext } from '../../context/ScheduleContext';
 
 function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDragging, currentMonth }) {
-    const { fetchParams } = useContext(ScheduleContext);
+    const { fetchParams, staffRequests } = useContext(ScheduleContext);
     const start = startOfMonth(currentMonth);
-    const end = endOfMonth(currentMonth); 
+    const end = endOfMonth(currentMonth);
     const daysInMonth = eachDayOfInterval({ start, end });
     const [dragStarted, setDragStarted] = useState(false);
     const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 });
-
+      
     const days = daysInMonth.map((date) => {
         const matchingData = fetchParams.filteredData.find(item => isSameDay(new Date(item.date), date));
+
+        const requestsForDay = staffRequests
+            ? staffRequests.flatMap(request => {
+                const requestStartDate = new Date(request.Start_Date);
+                const requestEndDate = new Date(request.End_Date);
+        
+                if (isSameDay(requestStartDate, requestEndDate)) {
+                    // If same day, check if it matches the current date
+                    if (isSameDay(requestStartDate, date)) {
+                        return [request]; 
+                    } else {
+                        return []; // Not the same day, so no request for this date
+                    }
+                }
+
+                // Check if there are recurring dates
+                if (request.Recurring_Dates && request.Recurring_Dates.length > 0) {
+                    // If recurring, filter dates within the range and matching recurring days
+                    const recurringDaysOfWeek = request.Recurring_Dates.map(day => {
+                        switch (day) {
+                            case 'Mon': return 1;
+                            case 'Tue': return 2;
+                            case 'Wed': return 3;
+                            case 'Thu': return 4;
+                            case 'Fri': return 5;
+                            case 'Sat': return 6;
+                            case 'Sun':
+                                return 0;
+                            default: return -1;
+                            // Invalid day
+                        }
+                    });
+                    return eachDayOfInterval({ start: requestStartDate, end: requestEndDate })
+                        .filter(d => recurringDaysOfWeek.includes(getDay(d)) && isSameDay(d, date))
+                        .map(d => ({ ...request, Start_Date: d, End_Date: d }));
+                } else {
+                    // If not recurring, check if the date is within the range
+                    const isWithinRange = date >= requestStartDate && date <= requestEndDate;
+                    return isWithinRange ? [request] : [];
+                }
+            })
+            : [];
+
         const tags = matchingData?.departments.flatMap(department =>
             department.teams.flatMap(team =>
                 team.members.map(member => member.WFH_Type)
@@ -24,6 +67,7 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
             number: format(date, 'd'),
             isToday: isSameDay(date, new Date()),
             tags: tags,
+            requests: requestsForDay
         };
     });
 
@@ -183,6 +227,7 @@ function Calendar({ selectedDateRange, setSelectedDateRange, isDragging, setIsDr
                             day={day}
                             tags={day.tags}
                             onSelect={handleDaySelect}
+                            requests={day.requests}
                             selectedDateRange={selectedDateRange}
                             onMouseOver={() => handleMouseOver(day.date)}
                         />
