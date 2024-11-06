@@ -7,6 +7,7 @@ import Tag from '../components/common/Tag';
 import ExpandButton from '../assets/images/expand.png';
 import { fetchRequests, withdrawRequest } from '../services/endpoints/manageRequests';
 import SupportingDocuments from '../components/request/SupportingDocumentsModal';
+import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 
 function Personal() {
     const [dataSource, setDataSource] = useState([]);
@@ -15,6 +16,7 @@ function Personal() {
     const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
     const [withdrawReason, setWithdrawReason] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate(); // Instantiate useNavigate
 
     useEffect(() => {
         const fetchData = async () => {
@@ -82,7 +84,7 @@ function Personal() {
     };
 
 
-    const handleWithdrawRequest = async () => {
+    const handleWithdrawRequest = async (isPartialWithdraw) => {
         if (!selectedRecord) {
             console.error("No request selected to withdraw");
             return;
@@ -92,16 +94,24 @@ function Personal() {
             const payload = {
                 requestId: selectedRecord.Request_ID,
                 requestReason: withdrawReason,
+                partial: isPartialWithdraw, // Flag to indicate if it's a partial withdraw
             };
 
             const response = await withdrawRequest(payload);
 
             if (response && response.message === 'Request withdrawn successfully') {
                 const updatedDataSource = dataSource.map((item) =>
-                    item.Request_ID === selectedRecord.Request_ID ? { ...item, Current_Status: 'Withdrawn' } : item
+                    item.Request_ID === selectedRecord.Request_ID
+                        ? { ...item, Current_Status: 'Partially Withdrawn' } // Change the status if partial
+                        : item
                 );
                 setDataSource(updatedDataSource);
-                message.success('Request withdrawn successfully.');
+                message.success('Request partially withdrawn successfully.');
+
+                if (isPartialWithdraw) {
+                    // Route to the dashboard on partial withdrawal
+                    navigate('/dashboard?showModal=true');
+                }
             } else {
                 console.error('Failed to withdraw request:', response);
                 message.error('Failed to withdraw request.');
@@ -276,10 +286,18 @@ function Personal() {
                 title="Withdraw Request"
                 open={isWithdrawModalVisible}
                 onCancel={handleCloseModal}
-                footer={[
-                    <Button key="close" text="Close" color="bg-gray" onClick={handleCloseModal} />,
-                    <Button key="withdraw" text="Withdraw" color="bg-orange" onClick={handleWithdrawRequest} />,
-                ]}
+                footer={
+                    <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+                            {/* Pass true to handle partial withdraw */}
+                            <Button key="partialWithdraw" text="Partial Withdraw" color="bg-blue-500" onClick={() => handleWithdrawRequest(true)} />
+                            <Button key="withdraw" text="Full Withdraw" color="bg-orange" onClick={() => handleWithdrawRequest(false)} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+                            <Button key="close" text="Close" color="bg-gray" onClick={handleCloseModal} />
+                        </div>
+                    </div>
+                }
             >
                 <Input.TextArea
                     rows={4}

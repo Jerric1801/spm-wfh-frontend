@@ -8,11 +8,13 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import WeekdayButton from '../applyWFH/WeekdayButton';
 import { applyWFH } from '../../services/endpoints/applyWFH'
+import { useLocation } from 'react-router-dom';
 //import FileUploadMultiple from '../applyWFH/UploadFiles';
 //import FileBase64 from 'react-file-base64';
 
 function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Date(), endDate = new Date() }) {
     const { setCurrentMonth, fetchParams } = useContext(ScheduleContext);
+    const location = useLocation();
     const [showModal, setShowModal] = useState(false);
     const [showCalen, setShowCalen] = useState(false);
     const [modalDateRange, setModalDateRange] = useState(`${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`);
@@ -206,6 +208,12 @@ function TopFilterPanel({ setSelectedDateRange, currentMonth, startDate = new Da
             reader.readAsDataURL(file);
         });
     }
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get('showModal') === 'true') {
+            setShowModal(true);
+        }
+    }, [location]);
 
     useEffect(() => {
         console.log(base64Files);
