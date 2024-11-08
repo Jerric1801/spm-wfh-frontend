@@ -2,20 +2,32 @@
 
 All-In-One, a printing solution company, wants to develop a web application to manage and track work-from-home (WFH) arrangements. The current Excel-based tracking system lacks governance, leading to confusion. The new system should allow staff to request regular or ad-hoc WFH days, include an approval process, and provide visibility for management to track staff availability in the office, addressing flexibility without productivity loss.
 
-## IS212 Software Project Mananagement Frontend 🖥️
+Visit our Backend Repository: [spm-wfh-backend](https://github.com/Jerric1801/spm-wfh-backend) 🔗
 
-1. Clone the repository:
+Visit All-In-One WFH 🚀: [All-In-One](https://aioworkfromhome.site/) 🔗
+
+
+## IS212 Software Project Management Frontend 🖥️
+
+1. **Prerequisites:**
+
+   * **Node.js and npm:** Make sure you have Node.js and npm (or yarn) installed on your system.
+
+2. Clone the repository:
    
    `git clone https://github.com/Jerric1801/spm-wfh-frontend.git`
 
-2. Navigate to the project directory:
+3. **Important:** Create a `.env` file in the root directory by referring to the `.env.example` file.
 
-   `cd frontend`
 
-3. Install Dependencies:
+4. Navigate to the project directory:
+
+   `cd spm-wfh-frontend`
+
+5. Install Dependencies:
    
    `npm install`
 
-4. Run App:
+6. Run App:
 
    `npm run dev`
