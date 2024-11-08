@@ -106,11 +106,14 @@ function Personal() {
                         : item
                 );
                 setDataSource(updatedDataSource);
-                message.success('Request partially withdrawn successfully.');
 
                 if (isPartialWithdraw) {
                     // Route to the dashboard on partial withdrawal
+                    message.success("Partial withdrawal request submitted successfully.");
                     navigate('/dashboard?showModal=true');
+                }
+                else {
+                    message.success("Withdrawal request submitted successfully.");
                 }
             } else {
                 console.error('Failed to withdraw request:', response);
